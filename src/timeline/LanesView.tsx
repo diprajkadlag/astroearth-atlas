@@ -224,6 +224,9 @@ export function LanesView({ height }: { height: number }) {
       ctx.stroke();
       if (tick.label) {
         ctx.font = `${tick.strong ? 650 : 400} 12px ${FONT}`;
+        // A label that would leave the canvas is left out; its tick stays.
+        const half = ctx.measureText(tick.label).width / 2;
+        if (x - half < 0 || x + half > width) continue;
         ctx.fillStyle = tick.strong ? UI_COLORS.ivory : UI_COLORS.muted;
         ctx.fillText(tick.label, x, axisY + 8);
       }

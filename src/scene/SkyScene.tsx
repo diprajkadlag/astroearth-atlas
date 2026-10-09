@@ -41,7 +41,7 @@ import {
   type Matrix3,
   type Vec3,
 } from "./frame.ts";
-import { isFarSide, isHiddenByEarth, stackLabels } from "./labels.ts";
+import { isFarSide, isHiddenByEarth, placeLabels } from "./labels.ts";
 import {
   EARTH_RADIUS,
   NAKSHATRA_LABEL_RADIUS,
@@ -305,23 +305,32 @@ function drawOverlay(
     .filter((item): item is NonNullable<typeof item> => item !== null)
     .sort((a, b) => a.graha.siderealLongitudeDeg - b.graha.siderealLongitudeDeg);
 
-  const anchors = visible.map((item) => ({
-    x: item.x + item.dx * (item.radiusPx + 12),
-    y: item.y + item.dy * (item.radiusPx + 10),
-    dx: item.dx,
-    dy: item.dy,
-  }));
-  const steps = stackLabels(anchors, 15, 14);
+  const labelText = (item: (typeof visible)[number]) => {
+    const physical = item.graha.id !== "rahu" && item.graha.id !== "ketu";
+    const retrograde = physical && item.graha.retrograde && item.graha.id !== "sun" && item.graha.id !== "moon";
+    return { retrograde, text: grahaAbbreviation(item.graha.id) + (retrograde ? " R" : "") };
+  };
+  const positions = placeLabels(
+    visible.map((item) => ({
+      x: item.x + item.dx * (item.radiusPx + 12),
+      y: item.y + item.dy * (item.radiusPx + 10),
+      dx: item.dx,
+      dy: item.dy,
+      halfWidth: ctx.measureText(labelText(item).text).width / 2,
+    })),
+    { width, height },
+    15,
+    14,
+  );
 
   // Ring labels give way to the grahas: a name that would touch a graha mark
   // or its label is left out. The sky table still lists every position.
   const occupied = visible.flatMap((item, index) => {
-    const label = anchors[index];
-    const offset = (steps[index] ?? 0) * 14;
+    const label = positions[index];
     return label
       ? [
           { x: item.x, y: item.y, rx: item.radiusPx + 26, ry: item.radiusPx + 9 },
-          { x: label.x + label.dx * offset, y: label.y + label.dy * offset, rx: 34, ry: 11 },
+          { x: label.x, y: label.y, rx: 34, ry: 11 },
         ]
       : [];
   });
@@ -340,11 +349,9 @@ function drawOverlay(
   if (width >= 700) NAKSHATRAS.forEach((name, index) => ringLabel(name, (index + 0.5) * (360 / 27), NAKSHATRA_LABEL_RADIUS));
 
   visible.forEach((item, index) => {
-    const anchor = anchors[index];
-    if (!anchor) return;
-    const offset = (steps[index] ?? 0) * 14;
-    const physical = item.graha.id !== "rahu" && item.graha.id !== "ketu";
-    const retrograde = physical && item.graha.retrograde && item.graha.id !== "sun" && item.graha.id !== "moon";
+    const position = positions[index];
+    if (!position) return;
+    const { retrograde, text } = labelText(item);
 
     ctx.strokeStyle = grahaColor(item.graha.id);
     ctx.lineWidth = 1.25;
@@ -364,11 +371,7 @@ function drawOverlay(
       ctx.stroke();
     }
     ctx.fillStyle = UI_COLORS.ivory;
-    ctx.fillText(
-      grahaAbbreviation(item.graha.id) + (retrograde ? " R" : ""),
-      anchor.x + anchor.dx * offset,
-      anchor.y + anchor.dy * offset,
-    );
+    ctx.fillText(text, position.x, position.y);
   });
 }
 

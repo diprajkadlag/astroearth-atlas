@@ -32,33 +32,64 @@ export function isFarSide(camera: Vec3, point: Vec3): boolean {
   return dot(camera, point) < 0;
 }
 
-export interface PlacedLabel {
-  /** Anchor on screen, in CSS pixels. */
+export interface LabelRequest {
+  /** Preferred position on screen, in CSS pixels. */
   x: number;
   y: number;
-  /** Unit direction in which the label moves away from its anchor. */
+  /** Unit direction in which the label may move away from its mark. */
   dx: number;
   dy: number;
+  /** Half the text width, in CSS pixels. */
+  halfWidth: number;
+}
+
+export interface LabelBounds {
+  width: number;
+  height: number;
 }
 
 /**
- * Moves labels that would overlap: each later label steps outward along its
- * own direction until it is at least `minDistance` from every earlier one.
- * Returns the offsets in steps, so a caller can also shift a leader line.
+ * Places labels so that they neither overlap nor leave the canvas. Each label
+ * tries its preferred place, then steps outward along its own direction, then
+ * steps sideways. A label that finds no free place keeps the nearest place
+ * inside the canvas. Earlier labels win.
  */
-export function stackLabels(labels: readonly PlacedLabel[], minDistance: number, step = minDistance, maxSteps = 4): number[] {
+export function placeLabels(
+  labels: readonly LabelRequest[],
+  bounds: LabelBounds,
+  minDistance: number,
+  step = minDistance,
+): { x: number; y: number }[] {
+  const margin = 4;
   const placed: { x: number; y: number }[] = [];
+  const inside = (label: LabelRequest, x: number, y: number) =>
+    x - label.halfWidth >= margin &&
+    x + label.halfWidth <= bounds.width - margin &&
+    y >= 8 &&
+    y <= bounds.height - 8;
+  const free = (x: number, y: number) =>
+    placed.every((other) => Math.hypot(other.x - x, other.y - y) >= minDistance);
+
   return labels.map((label) => {
-    let steps = 0;
-    let x = label.x;
-    let y = label.y;
-    const clashes = () => placed.some((other) => Math.hypot(other.x - x, other.y - y) < minDistance);
-    while (steps < maxSteps && clashes()) {
-      steps += 1;
-      x = label.x + label.dx * step * steps;
-      y = label.y + label.dy * step * steps;
+    const candidates: [number, number][] = [];
+    for (let out = 0; out <= 3; out += 1) candidates.push([out, 0]);
+    for (let side = 1; side <= 3; side += 1) {
+      for (const out of [0, 1]) candidates.push([out, side], [out, -side]);
     }
-    placed.push({ x, y });
-    return steps;
+    let chosen: { x: number; y: number } | null = null;
+    for (const [out, side] of candidates) {
+      const x = label.x + label.dx * step * out - label.dy * step * side;
+      const y = label.y + label.dy * step * out + label.dx * step * side;
+      if (inside(label, x, y) && free(x, y)) {
+        chosen = { x, y };
+        break;
+      }
+    }
+    chosen ??= {
+      x: Math.min(bounds.width - margin - label.halfWidth, Math.max(margin + label.halfWidth, label.x)),
+      y: Math.min(bounds.height - 8, Math.max(8, label.y)),
+    };
+    placed.push(chosen);
+    return chosen;
   });
 }

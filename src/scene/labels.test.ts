@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { isFarSide, isHiddenByEarth, stackLabels } from "./labels.ts";
+import { isFarSide, isHiddenByEarth, placeLabels } from "./labels.ts";
 import { ringTicks, RING_RADIUS } from "./ringGeometry.ts";
 
 describe("label layer", () => {
@@ -18,16 +18,34 @@ describe("label layer", () => {
     expect(isFarSide(camera, [1, -0.5, 0])).toBe(false);
   });
 
-  it("stacks close labels outward and leaves distant ones alone", () => {
-    const steps = stackLabels(
+  it("moves a clashing label outward and leaves distant ones alone", () => {
+    const placed = placeLabels(
       [
-        { x: 100, y: 100, dx: 1, dy: 0 },
-        { x: 104, y: 100, dx: 1, dy: 0 },
-        { x: 300, y: 100, dx: 1, dy: 0 },
+        { x: 100, y: 100, dx: 1, dy: 0, halfWidth: 8 },
+        { x: 104, y: 100, dx: 1, dy: 0, halfWidth: 8 },
+        { x: 300, y: 100, dx: 1, dy: 0, halfWidth: 8 },
       ],
+      { width: 400, height: 200 },
       14,
     );
-    expect(steps).toEqual([0, 1, 0]);
+    expect(placed[0]).toEqual({ x: 100, y: 100 });
+    expect(placed[1]).toEqual({ x: 118, y: 100 });
+    expect(placed[2]).toEqual({ x: 300, y: 100 });
+  });
+
+  it("keeps labels inside the canvas by moving them sideways", () => {
+    // Both labels want the right edge; outward steps would leave the canvas.
+    const placed = placeLabels(
+      [
+        { x: 380, y: 100, dx: 1, dy: 0, halfWidth: 8 },
+        { x: 382, y: 100, dx: 1, dy: 0, halfWidth: 8 },
+      ],
+      { width: 400, height: 200 },
+      14,
+    );
+    for (const label of placed) expect(label.x + 8).toBeLessThanOrEqual(396);
+    const [a, b] = placed as [{ x: number; y: number }, { x: number; y: number }];
+    expect(Math.hypot(a.x - b.x, a.y - b.y)).toBeGreaterThanOrEqual(14);
   });
 });
 
