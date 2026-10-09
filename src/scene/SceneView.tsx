@@ -222,7 +222,7 @@ export function SceneView({ className = "" }: { className?: string }) {
             type="button"
             onClick={() => setTouchArmed(true)}
             aria-label={t("touchUnlockLabel")}
-            className="absolute inset-0 flex touch-pan-y items-end justify-center bg-transparent pb-4"
+            className="absolute inset-0 flex touch-pan-y items-end justify-start bg-transparent pb-3 pl-3"
           >
             <span className="rounded-control bg-dial/90 px-4 py-2.5 text-small">{t("touchUnlock")}</span>
           </button>

@@ -370,6 +370,18 @@ function drawOverlay(
       ctx.arc(item.x, item.y, item.radiusPx + 3, 0, Math.PI * 2);
       ctx.stroke();
     }
+    // A label that had to move away from its mark gets a thin leader line.
+    const gap = Math.hypot(position.x - item.x, position.y - item.y);
+    if (gap > item.radiusPx + 24) {
+      const ux = (position.x - item.x) / gap;
+      const uy = (position.y - item.y) / gap;
+      ctx.strokeStyle = withAlpha(UI_COLORS.ivory, 0.35);
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(item.x + ux * (item.radiusPx + 3), item.y + uy * (item.radiusPx + 3));
+      ctx.lineTo(position.x - ux * 9, position.y - uy * 9);
+      ctx.stroke();
+    }
     ctx.fillStyle = UI_COLORS.ivory;
     ctx.fillText(text, position.x, position.y);
   });
