@@ -1,16 +1,8 @@
 @import "tailwindcss";
+@import "./design/fonts.css";
+@import "./design/tokens.css";
 
-/*
- * Placeholder tokens for the app shell. The real palette, type and motion
- * rules come from the design direction chosen in milestone M2 (DESIGN.md).
- * Fonts stay system fonts until then: no web font may load from another origin.
- */
-@theme {
-  --color-surface: #0b1020;
-  --color-ink: #e8e6df;
-  --color-muted: #a3abbb;
-  --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
-}
+/* Global rules of the Yantra direction. DESIGN.md explains each token. */
 
 :root {
   color-scheme: dark;
@@ -25,9 +17,32 @@ body,
 
 body {
   margin: 0;
-  background-color: var(--color-surface);
-  color: var(--color-ink);
+  background-color: var(--color-ground);
+  color: var(--color-ivory);
   font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: var(--color-brass);
+  color: var(--color-ground);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brass);
+  outline-offset: 2px;
+}
+
+a {
+  color: var(--color-brass);
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,0 +1,57 @@
+/*
+ * Design tokens of the Yantra direction (DESIGN.md). Tailwind turns each
+ * variable into utilities, for example bg-ground, text-ivory, font-display
+ * and text-body. Canvas and WebGL code reads the same values from
+ * src/design/palette.ts. tests/design-tokens.test.ts keeps both files equal
+ * and checks every contrast ratio.
+ */
+@theme static {
+  /* Surfaces */
+  --color-ground: #0e1330; /* night indigo: the page */
+  --color-dial: #070a1c; /* dial ink: the instrument plate and the scene */
+  --color-raised: #151b3d; /* tooltips, the event card, the table header */
+
+  /* Ink */
+  --color-ivory: #eae3d2; /* plaster ivory: text and engraved lines */
+  --color-muted: #a8a493; /* secondary text */
+  --color-rule: rgb(234 227 210 / 0.16); /* hairlines between rows */
+  --color-rule-strong: rgb(234 227 210 / 0.32); /* scale baselines, input borders */
+
+  /* Accents, each with one job */
+  --color-brass: #c9a25e; /* the date cursor, focus, the primary action, the Koorma glow */
+  --color-eclipse: #f6eeda; /* reserved: eclipses only */
+
+  /* Graha colours: the validated categorical palette, one hue family per graha */
+  --color-graha-moon: #3987e5;
+  --color-graha-sun: #d95926;
+  --color-graha-nodes: #199e70; /* verdigris: Rahu solid, Ketu dotted, and their axis */
+  --color-graha-jupiter: #c98500;
+  --color-graha-venus: #d55181;
+  --color-graha-mercury: #008300;
+  --color-graha-saturn: #9085e9;
+  --color-graha-mars: #e66767;
+
+  /* Type */
+  --font-display: "Tiro Devanagari Sanskrit", "Iowan Old Style", Georgia, serif;
+  --font-sans: "Anek Devanagari", system-ui, "Segoe UI", sans-serif;
+
+  --text-caption: 12px;
+  --text-caption--line-height: 16px;
+  --text-small: 13px;
+  --text-small--line-height: 18px;
+  --text-body: 15px;
+  --text-body--line-height: 22px;
+  --text-lead: 17px;
+  --text-lead--line-height: 24px;
+  --text-title-3: 18px;
+  --text-title-3--line-height: 24px;
+  --text-title-2: 22px;
+  --text-title-2--line-height: 28px;
+  --text-title-1: 30px;
+  --text-title-1--line-height: 36px;
+  --text-date: 44px;
+  --text-date--line-height: 48px;
+
+  /* Shape */
+  --radius-control: 3px;
+}

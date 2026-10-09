@@ -24,7 +24,7 @@ The approved plan is in
 - Engine searches take a `sampler` option. Long scans pass `cachingSampler()` so that 00:00 UTC positions are computed once.
 - Scene tests read positions from a debug hook on `window`, never from pixels. Screenshots are for review only.
 - The scene frame is Z-up, right-handed, sidereal ecliptic of date. Longitude increases counter-clockwise seen from ecliptic north.
-- Design rules live in `DESIGN.md` (written in M2).
+- Design rules live in `DESIGN.md` (Yantra direction, chosen 2026-10-09). Read it before any interface change. Colours come from `src/design/tokens.css` and `src/design/palette.ts` only.
 
 ## Writing rules
 - Interface text: plain English, short sentences, sentence case. Every string goes into `src/i18n/en.ts`.
