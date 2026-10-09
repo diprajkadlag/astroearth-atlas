@@ -1,52 +1,45 @@
+import { Suspense, lazy } from "react";
+
 import { t } from "./i18n/index.ts";
+import { Header } from "./panels/Header.tsx";
+import { SkyTable } from "./panels/SkyTable.tsx";
+import { usePlayback, useUrlSync } from "./state/hooks.ts";
+import { TimelineSection } from "./timeline/TimelineSection.tsx";
+
+// three.js and the scene load in their own chunk (plan, performance budgets).
+const SceneView = lazy(() => import("./scene/SceneView.tsx").then((module) => ({ default: module.SceneView })));
+
+/** Holds the scene's place while its chunk loads, so the page does not jump. */
+function ScenePlaceholder({ className }: { className: string }) {
+  return (
+    <div className={`min-w-0 ${className}`}>
+      <div className="h-[280px] bg-ground sm:h-[440px] lg:h-[560px]" />
+    </div>
+  );
+}
 
 /**
- * Application shell. The regions match the planned layout: Earth and sky,
- * the sky table, and the timeline. The visual design is chosen in milestone
- * M2 and written down in DESIGN.md, so this shell stays deliberately plain.
+ * The page (DESIGN.md, layout). On a phone the order is the scene, the
+ * timeline, then the sky table. From 1024 px the sky table moves beside the
+ * scene, and the timeline spans the full width below them.
  */
 export function App() {
+  useUrlSync();
+  usePlayback();
+
   return (
-    <div className="flex min-h-full flex-col">
-      <header className="px-4 pt-6 pb-4 sm:px-8">
-        <h1 className="text-2xl font-semibold tracking-tight">{t("appName")}</h1>
-        <p className="text-muted mt-1 max-w-prose text-sm">{t("tagline")}</p>
-      </header>
-
-      <main className="grid flex-1 gap-4 px-4 pb-6 sm:px-8 lg:grid-cols-[2fr_1fr]">
-        <section
-          aria-labelledby="globe-title"
-          className="min-w-0 rounded-md border border-white/10 p-4"
-        >
-          <h2 id="globe-title" className="text-base font-medium">
-            {t("globeTitle")}
-          </h2>
-          <p className="text-muted mt-2 text-sm">{t("inDevelopment")}</p>
-        </section>
-
-        <section
-          aria-labelledby="sky-title"
-          className="min-w-0 rounded-md border border-white/10 p-4"
-        >
-          <h2 id="sky-title" className="text-base font-medium">
-            {t("skyTitle")}
-          </h2>
-          <p className="text-muted mt-2 text-sm">{t("inDevelopment")}</p>
-        </section>
-
-        <section
-          aria-labelledby="timeline-title"
-          className="min-w-0 rounded-md border border-white/10 p-4 lg:col-span-2"
-        >
-          <h2 id="timeline-title" className="text-base font-medium">
-            {t("timelineTitle")}
-          </h2>
-          <p className="text-muted mt-2 text-sm">{t("inDevelopment")}</p>
-        </section>
+    <div className="mx-auto flex min-h-full max-w-[1600px] flex-col">
+      <Header />
+      <main className="grid gap-x-8 gap-y-6 px-4 sm:px-8 lg:grid-cols-[3fr_2fr]">
+        <Suspense fallback={<ScenePlaceholder className="lg:col-start-1 lg:row-start-1" />}>
+          <SceneView className="lg:col-start-1 lg:row-start-1" />
+        </Suspense>
+        <TimelineSection className="lg:col-span-2 lg:row-start-2" />
+        <SkyTable className="lg:col-start-2 lg:row-start-1" />
       </main>
-
-      <footer className="text-muted px-4 pt-2 pb-6 text-sm sm:px-8">
+      <footer className="text-muted mt-auto px-4 pt-8 pb-6 text-small sm:px-8">
         <p className="max-w-prose">{t("disclaimer")}</p>
+        <p className="mt-1 max-w-prose">{t("creditsEarth")}</p>
       </footer>
     </div>
   );

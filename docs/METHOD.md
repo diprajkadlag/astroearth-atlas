@@ -94,6 +94,60 @@ The place on Earth where a graha stands at the zenith: latitude equals its
 apparent declination of date, and longitude equals its right ascension minus
 Greenwich apparent sidereal time.
 
+## The 3D scene
+
+- **Frame.** The scene is right-handed with Z up, in the sidereal ecliptic of
+  date. +X points to sidereal 0° (the start of Ashwini) and +Z to the north
+  ecliptic pole. Seen from the north, longitude increases counter-clockwise.
+  The ring is not to scale: the Earth has radius 1 and the ring radius 1.8.
+- **Earth rotation.** A vector of the Earth body frame goes into the scene as
+  `Rz(−ayanamsa) · R(EQD→ECT) · Rz(GAST) · v`. GAST is Greenwich apparent
+  sidereal time. R(EQD→ECT) turns the true equator of date into the true
+  ecliptic of date (astronomy-engine). The true ayanamsa is used, as for the
+  planets. Polar motion is ignored.
+- **Checks.** At 5 instants from 1900 to 2050, the place on Earth under each
+  scene direction matches the engine's sub-planet point within 0.1°. The
+  Earth's north pole leans toward tropical longitude 90° by the obliquity
+  (`src/scene/frame.test.ts`). The browser tests read the Earth's own matrix
+  and the Sun marker from the running page and check the sub-solar point in
+  the same way (`e2e/scene.spec.ts`).
+- **Earth motion.** For a date step under 1 day (a timeline span under 60
+  days), the Earth shows the true time of day. For a step of 1 day or more,
+  and during playback, it shows 00:00 UTC of the date, so the globe stays
+  calm. The ring and the grahas always show the true instant.
+- **Graha marks.** The marks sit on the ring at their sidereal longitude. The
+  ecliptic latitude is not shown. The Moon mark is lit by the true Sun
+  direction, so it shows the phase.
+
+## Tithi
+
+The tithi is the lunar day at the shown instant: the Moon's elongation from
+the Sun, in steps of 12°. Tithis 1 to 15 are Shukla (waxing), 16 to 30
+Krishna (waning). Tithi 15 is Purnima and tithi 30 Amavasya. A panchang gives
+the tithi at local sunrise, so it can differ from the tithi at 00:00 UTC.
+
+## Comparison with Drik Panchang
+
+On 2026-10-09, a check compared the engine with the sidereal planetary
+positions of [Drik Panchang](https://www.drikpanchang.com/planet/position/planetary-positions-sidereal.html)
+(Lahiri, mean nodes, New Delhi, 12:00 IST) on 3 dates: 1925-06-01, 1962-02-05
+and 2020-12-21.
+
+- All 27 differences (9 grahas on 3 dates) are below 1 arcminute. The largest
+  is 0.71′ (the Moon on 1925-06-01).
+- The engine is ahead by 0.4′ to 0.7′ on almost every row, for 2 probable
+  reasons:
+  - Drik Panchang's ayanamsa is 24.14″ larger than the engine's mean
+    ayanamsa on all 3 dates. Both probably use the same precession, with a
+    different value at the anchor epoch. This gives the 0.40′ on Rahu and
+    Ketu.
+  - Drik Panchang probably subtracts an ayanamsa without nutation from
+    true-equinox longitudes. The engine subtracts the true ayanamsa (with
+    nutation), as stated above. This adds 0.17′ to 0.28′ on the 7 planets.
+- Both use a geocentric Moon.
+- Consequence: a graha within about 0.7′ of a nakshatra, pada or sign
+  boundary can fall on the other side of it in Drik Panchang.
+
 ## Calendar
 
 - Instants are stored in UTC.

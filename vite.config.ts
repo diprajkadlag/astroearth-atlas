@@ -76,6 +76,12 @@ export default defineConfig({
   // app on a shared port would otherwise answer for it.
   server: { port: 4747, strictPort: true },
   preview: { port: 4748, strictPort: true },
+  build: {
+    // The scene chunk holds all of three.js (React Three Fiber imports the
+    // whole library). It loads after the page, so it does not delay the
+    // first view. Other chunks stay far below this limit.
+    chunkSizeWarningLimit: 1000,
+  },
   test: {
     include: ["src/**/*.test.{ts,tsx}", "tests/**/*.test.ts"],
     environment: "node",

@@ -40,12 +40,16 @@
     "licenses:write": "node scripts/check-licenses.mjs --write",
     "data": "node --no-warnings scripts/generate-sky-data.ts",
     "data:check": "node --no-warnings scripts/generate-sky-data.ts --check",
-    "horizons": "node --no-warnings scripts/fetch-horizons-reference.ts"
+    "horizons": "node --no-warnings scripts/fetch-horizons-reference.ts",
+    "textures": "node --no-warnings scripts/make-earth-textures.ts"
   },
   "dependencies": {
+    "@react-three/fiber": "9.8.1",
     "astronomy-engine": "2.1.19",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "three": "0.186.1",
+    "zustand": "5.0.15"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",
@@ -55,11 +59,13 @@
     "@types/node": "24.19.1",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
+    "@types/three": "0.186.0",
     "@vitejs/plugin-react": "6.1.2",
     "eslint": "10.12.0",
     "eslint-plugin-react-hooks": "7.1.1",
     "eslint-plugin-react-refresh": "0.5.7",
     "globals": "17.13.0",
+    "sharp": "0.35.5",
     "tailwindcss": "4.3.3",
     "typescript": "6.0.3",
     "typescript-eslint": "8.71.1",

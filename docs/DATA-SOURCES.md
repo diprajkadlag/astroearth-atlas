@@ -11,6 +11,22 @@ with the site are listed with their licenses in [CREDITS.md](../CREDITS.md).
 | Surya Siddhanta, translated by E. Burgess (1860) | Combustion orbs (9.6 to 9.8, 10.1) | Public domain |
 | Brihat Samhita, translated by N. Chidambaram Iyer (1884) | Koorma Chakra table (chapter 14) and the eclipse-region rule (5.42), from milestone M5 | Public domain |
 | Hipparcos catalogue position of Spica | One test of the ayanamsa | A fact (a star position) |
+| NASA Earth Observatory, [Blue Marble Next Generation](https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-topography-bathymetry), July 2004, topography and bathymetry, 5400 x 2700 JPEG | The day side of the Earth (`public/textures/earth-day-*.webp`) | [NASA media guidelines](https://www.nasa.gov/nasa-brand-center/images-and-media/): not subject to US copyright. Credit NASA. No logo, no endorsement |
+| NASA Earth Observatory, [Black Marble 2016](https://science.nasa.gov/earth/earth-observatory/earth-at-night/maps/), grayscale, 3 km, 13500 x 6750 JPEG | City lights on the night side (`public/textures/earth-night-*.webp`) | As above |
+
+### Earth textures
+
+`scripts/make-earth-textures.ts` makes the textures from the 2 originals. The
+originals are not in the repository (8 MB together). Download them, then run
+`npm run textures -- <folder>`. The script refuses files with another
+SHA-256:
+
+| File | SHA-256 |
+|---|---|
+| [world.topo.bathy.200407.3x5400x2700.jpg](https://assets.science.nasa.gov/content/dam/science/esd/eo/images/bmng/bmng-topography-bathymetry/july/world.topo.bathy.200407.3x5400x2700.jpg) | `4f4240673a3a1b173d61b92ca4b07bac5fd17059ea5f725ba6da5a9c5386b7ba` |
+| [BlackMarble_2016_3km_gray.jpg](https://assets.science.nasa.gov/content/dam/science/esd/eo/images/imagerecords/144000/144897/BlackMarble_2016_3km_gray.jpg) | `3fbc8aae3529dc1ebfcf3aa9361bd3dfc11d19950a6af6d8ed2df61bd8b0134d` |
+
+Both maps show no political borders. The app must not add any (CLAUDE.md).
 
 Rules for new sources:
 
