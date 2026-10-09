@@ -20,6 +20,8 @@ The approved plan is in
 - Relative imports carry explicit `.ts` or `.tsx` extensions, so Node 24 runs scripts in `scripts/` without a build step.
 - `erasableSyntaxOnly` is on: no enums, namespaces or parameter properties.
 - Before each commit: `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`. After UI changes: `npm run e2e`.
+- After any change in `src/engine/`: run `npm run data`, commit the changed files in `public/data`, and update `docs/METHOD.md` when a convention changes.
+- Engine searches take a `sampler` option. Long scans pass `cachingSampler()` so that 00:00 UTC positions are computed once.
 - Scene tests read positions from a debug hook on `window`, never from pixels. Screenshots are for review only.
 - The scene frame is Z-up, right-handed, sidereal ecliptic of date. Longitude increases counter-clockwise seen from ecliptic north.
 - Design rules live in `DESIGN.md` (written in M2).

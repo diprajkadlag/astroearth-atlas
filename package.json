@@ -37,9 +37,13 @@
     "test:watch": "vitest",
     "e2e": "playwright test",
     "licenses": "node scripts/check-licenses.mjs",
-    "licenses:write": "node scripts/check-licenses.mjs --write"
+    "licenses:write": "node scripts/check-licenses.mjs --write",
+    "data": "node --no-warnings scripts/generate-sky-data.ts",
+    "data:check": "node --no-warnings scripts/generate-sky-data.ts --check",
+    "horizons": "node --no-warnings scripts/fetch-horizons-reference.ts"
   },
   "dependencies": {
+    "astronomy-engine": "2.1.19",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },

@@ -1,0 +1,427 @@
+{
+  "source": "NASA JPL Horizons API (https://ssd.jpl.nasa.gov/horizons/)",
+  "fetched": "2026-10-09",
+  "quantity": "31: apparent ecliptic-of-date longitude and latitude, geocentric (500@399)",
+  "rows": [
+    {
+      "body": "sun",
+      "utc": "1900-01-01T00:00:00Z",
+      "eclipticLongitudeDeg": 280.1532941,
+      "eclipticLatitudeDeg": 0.0000648
+    },
+    {
+      "body": "sun",
+      "utc": "1918-11-11T00:00:00Z",
+      "eclipticLongitudeDeg": 227.7927153,
+      "eclipticLatitudeDeg": 0.0001244
+    },
+    {
+      "body": "sun",
+      "utc": "1945-08-15T00:00:00Z",
+      "eclipticLongitudeDeg": 141.7966816,
+      "eclipticLatitudeDeg": 0.0001185
+    },
+    {
+      "body": "sun",
+      "utc": "1969-07-20T20:17:00Z",
+      "eclipticLongitudeDeg": 117.9107302,
+      "eclipticLatitudeDeg": -0.0001002
+    },
+    {
+      "body": "sun",
+      "utc": "2000-01-01T12:00:00Z",
+      "eclipticLongitudeDeg": 280.3689092,
+      "eclipticLatitudeDeg": 0.0002381
+    },
+    {
+      "body": "sun",
+      "utc": "2019-12-26T05:18:00Z",
+      "eclipticLongitudeDeg": 274.1177744,
+      "eclipticLatitudeDeg": 0.0000497
+    },
+    {
+      "body": "sun",
+      "utc": "2020-12-21T18:20:00Z",
+      "eclipticLongitudeDeg": 270.3519662,
+      "eclipticLatitudeDeg": -0.0002096
+    },
+    {
+      "body": "sun",
+      "utc": "2024-04-08T18:17:00Z",
+      "eclipticLongitudeDeg": 19.3977931,
+      "eclipticLatitudeDeg": -0.0000531
+    },
+    {
+      "body": "sun",
+      "utc": "2035-06-01T00:00:00Z",
+      "eclipticLongitudeDeg": 70.3741577,
+      "eclipticLatitudeDeg": -0.0001546
+    },
+    {
+      "body": "sun",
+      "utc": "2050-12-31T00:00:00Z",
+      "eclipticLongitudeDeg": 279.478506,
+      "eclipticLatitudeDeg": -0.000096
+    },
+    {
+      "body": "moon",
+      "utc": "1900-01-01T00:00:00Z",
+      "eclipticLongitudeDeg": 272.4162663,
+      "eclipticLatitudeDeg": 1.1082671
+    },
+    {
+      "body": "moon",
+      "utc": "1918-11-11T00:00:00Z",
+      "eclipticLongitudeDeg": 309.107752,
+      "eclipticLatitudeDeg": 4.347991
+    },
+    {
+      "body": "moon",
+      "utc": "1945-08-15T00:00:00Z",
+      "eclipticLongitudeDeg": 220.6686611,
+      "eclipticLatitudeDeg": 4.3541927
+    },
+    {
+      "body": "moon",
+      "utc": "1969-07-20T20:17:00Z",
+      "eclipticLongitudeDeg": 187.8737519,
+      "eclipticLatitudeDeg": -1.3631482
+    },
+    {
+      "body": "moon",
+      "utc": "2000-01-01T12:00:00Z",
+      "eclipticLongitudeDeg": 223.323786,
+      "eclipticLatitudeDeg": 5.1707422
+    },
+    {
+      "body": "moon",
+      "utc": "2019-12-26T05:18:00Z",
+      "eclipticLongitudeDeg": 274.1589238,
+      "eclipticLatitudeDeg": 0.3901512
+    },
+    {
+      "body": "moon",
+      "utc": "2020-12-21T18:20:00Z",
+      "eclipticLongitudeDeg": 357.8752134,
+      "eclipticLatitudeDeg": -5.2344707
+    },
+    {
+      "body": "moon",
+      "utc": "2024-04-08T18:17:00Z",
+      "eclipticLongitudeDeg": 19.3602439,
+      "eclipticLatitudeDeg": 0.3456098
+    },
+    {
+      "body": "moon",
+      "utc": "2035-06-01T00:00:00Z",
+      "eclipticLongitudeDeg": 0.6889463,
+      "eclipticLatitudeDeg": -1.7782351
+    },
+    {
+      "body": "moon",
+      "utc": "2050-12-31T00:00:00Z",
+      "eclipticLongitudeDeg": 132.4396778,
+      "eclipticLatitudeDeg": -5.0649334
+    },
+    {
+      "body": "mercury",
+      "utc": "1900-01-01T00:00:00Z",
+      "eclipticLongitudeDeg": 258.9977026,
+      "eclipticLatitudeDeg": 1.126422
+    },
+    {
+      "body": "mercury",
+      "utc": "1918-11-11T00:00:00Z",
+      "eclipticLongitudeDeg": 243.080656,
+      "eclipticLatitudeDeg": -1.8665612
+    },
+    {
+      "body": "mercury",
+      "utc": "1945-08-15T00:00:00Z",
+      "eclipticLongitudeDeg": 151.8146451,
+      "eclipticLatitudeDeg": -4.771318
+    },
+    {
+      "body": "mercury",
+      "utc": "1969-07-20T20:17:00Z",
+      "eclipticLongitudeDeg": 115.8428987,
+      "eclipticLatitudeDeg": 1.4588006
+    },
+    {
+      "body": "mercury",
+      "utc": "2000-01-01T12:00:00Z",
+      "eclipticLongitudeDeg": 271.8892699,
+      "eclipticLatitudeDeg": -0.994819
+    },
+    {
+      "body": "mercury",
+      "utc": "2019-12-26T05:18:00Z",
+      "eclipticLongitudeDeg": 265.3591364,
+      "eclipticLatitudeDeg": -0.7144757
+    },
+    {
+      "body": "mercury",
+      "utc": "2020-12-21T18:20:00Z",
+      "eclipticLongitudeDeg": 271.2690859,
+      "eclipticLatitudeDeg": -1.5782204
+    },
+    {
+      "body": "mercury",
+      "utc": "2024-04-08T18:17:00Z",
+      "eclipticLongitudeDeg": 24.7995541,
+      "eclipticLatitudeDeg": 2.8345015
+    },
+    {
+      "body": "mercury",
+      "utc": "2035-06-01T00:00:00Z",
+      "eclipticLongitudeDeg": 60.4053788,
+      "eclipticLatitudeDeg": -3.2083872
+    },
+    {
+      "body": "mercury",
+      "utc": "2050-12-31T00:00:00Z",
+      "eclipticLongitudeDeg": 257.0864122,
+      "eclipticLatitudeDeg": 1.9504748
+    },
+    {
+      "body": "venus",
+      "utc": "1900-01-01T00:00:00Z",
+      "eclipticLongitudeDeg": 306.3743725,
+      "eclipticLatitudeDeg": -1.6830905
+    },
+    {
+      "body": "venus",
+      "utc": "1918-11-11T00:00:00Z",
+      "eclipticLongitudeDeg": 224.5541898,
+      "eclipticLatitudeDeg": 0.8412904
+    },
+    {
+      "body": "venus",
+      "utc": "1945-08-15T00:00:00Z",
+      "eclipticLongitudeDeg": 101.9579374,
+      "eclipticLatitudeDeg": -1.3795942
+    },
+    {
+      "body": "venus",
+      "utc": "1969-07-20T20:17:00Z",
+      "eclipticLongitudeDeg": 75.0374087,
+      "eclipticLatitudeDeg": -2.4542347
+    },
+    {
+      "body": "venus",
+      "utc": "2000-01-01T12:00:00Z",
+      "eclipticLongitudeDeg": 241.5657794,
+      "eclipticLatitudeDeg": 2.0663548
+    },
+    {
+      "body": "venus",
+      "utc": "2019-12-26T05:18:00Z",
+      "eclipticLongitudeDeg": 307.3143471,
+      "eclipticLatitudeDeg": -1.8628966
+    },
+    {
+      "body": "venus",
+      "utc": "2020-12-21T18:20:00Z",
+      "eclipticLongitudeDeg": 247.6018646,
+      "eclipticLatitudeDeg": 1.0593893
+    },
+    {
+      "body": "venus",
+      "utc": "2024-04-08T18:17:00Z",
+      "eclipticLongitudeDeg": 4.4417785,
+      "eclipticLatitudeDeg": -1.49651
+    },
+    {
+      "body": "venus",
+      "utc": "2035-06-01T00:00:00Z",
+      "eclipticLongitudeDeg": 51.4847969,
+      "eclipticLatitudeDeg": -1.2160352
+    },
+    {
+      "body": "venus",
+      "utc": "2050-12-31T00:00:00Z",
+      "eclipticLongitudeDeg": 232.6685689,
+      "eclipticLatitudeDeg": 3.2170097
+    },
+    {
+      "body": "mars",
+      "utc": "1900-01-01T00:00:00Z",
+      "eclipticLongitudeDeg": 283.8676754,
+      "eclipticLatitudeDeg": -0.9254021
+    },
+    {
+      "body": "mars",
+      "utc": "1918-11-11T00:00:00Z",
+      "eclipticLongitudeDeg": 269.678987,
+      "eclipticLatitudeDeg": -1.2262399
+    },
+    {
+      "body": "mars",
+      "utc": "1945-08-15T00:00:00Z",
+      "eclipticLongitudeDeg": 75.1412852,
+      "eclipticLatitudeDeg": -0.4326566
+    },
+    {
+      "body": "mars",
+      "utc": "1969-07-20T20:17:00Z",
+      "eclipticLongitudeDeg": 242.7732832,
+      "eclipticLatitudeDeg": -3.3930191
+    },
+    {
+      "body": "mars",
+      "utc": "2000-01-01T12:00:00Z",
+      "eclipticLongitudeDeg": 327.9632921,
+      "eclipticLatitudeDeg": -1.0677752
+    },
+    {
+      "body": "mars",
+      "utc": "2019-12-26T05:18:00Z",
+      "eclipticLongitudeDeg": 234.5036848,
+      "eclipticLatitudeDeg": 0.4174927
+    },
+    {
+      "body": "mars",
+      "utc": "2020-12-21T18:20:00Z",
+      "eclipticLongitudeDeg": 23.2119839,
+      "eclipticLatitudeDeg": 0.6412465
+    },
+    {
+      "body": "mars",
+      "utc": "2024-04-08T18:17:00Z",
+      "eclipticLongitudeDeg": 343.0493342,
+      "eclipticLatitudeDeg": -1.2447136
+    },
+    {
+      "body": "mars",
+      "utc": "2035-06-01T00:00:00Z",
+      "eclipticLongitudeDeg": 330.6283387,
+      "eclipticLatitudeDeg": -2.5951319
+    },
+    {
+      "body": "mars",
+      "utc": "2050-12-31T00:00:00Z",
+      "eclipticLongitudeDeg": 4.8312356,
+      "eclipticLatitudeDeg": -0.1243805
+    },
+    {
+      "body": "jupiter",
+      "utc": "1900-01-01T00:00:00Z",
+      "eclipticLongitudeDeg": 241.135883,
+      "eclipticLatitudeDeg": 0.8142907
+    },
+    {
+      "body": "jupiter",
+      "utc": "1918-11-11T00:00:00Z",
+      "eclipticLongitudeDeg": 105.7360634,
+      "eclipticLatitudeDeg": -0.0830974
+    },
+    {
+      "body": "jupiter",
+      "utc": "1945-08-15T00:00:00Z",
+      "eclipticLongitudeDeg": 177.9763586,
+      "eclipticLatitudeDeg": 1.1371517
+    },
+    {
+      "body": "jupiter",
+      "utc": "1969-07-20T20:17:00Z",
+      "eclipticLongitudeDeg": 180.7462243,
+      "eclipticLatitudeDeg": 1.2191714
+    },
+    {
+      "body": "jupiter",
+      "utc": "2000-01-01T12:00:00Z",
+      "eclipticLongitudeDeg": 25.2530685,
+      "eclipticLatitudeDeg": -1.2621868
+    },
+    {
+      "body": "jupiter",
+      "utc": "2019-12-26T05:18:00Z",
+      "eclipticLongitudeDeg": 275.3381252,
+      "eclipticLatitudeDeg": 0.097666
+    },
+    {
+      "body": "jupiter",
+      "utc": "2020-12-21T18:20:00Z",
+      "eclipticLongitudeDeg": 300.4859927,
+      "eclipticLatitudeDeg": -0.4802802
+    },
+    {
+      "body": "jupiter",
+      "utc": "2024-04-08T18:17:00Z",
+      "eclipticLongitudeDeg": 49.0451411,
+      "eclipticLatitudeDeg": -0.8016549
+    },
+    {
+      "body": "jupiter",
+      "utc": "2035-06-01T00:00:00Z",
+      "eclipticLongitudeDeg": 37.442461,
+      "eclipticLatitudeDeg": -1.0484906
+    },
+    {
+      "body": "jupiter",
+      "utc": "2050-12-31T00:00:00Z",
+      "eclipticLongitudeDeg": 155.721875,
+      "eclipticLatitudeDeg": 1.0548095
+    },
+    {
+      "body": "saturn",
+      "utc": "1900-01-01T00:00:00Z",
+      "eclipticLongitudeDeg": 267.7167387,
+      "eclipticLatitudeDeg": 1.0076898
+    },
+    {
+      "body": "saturn",
+      "utc": "1918-11-11T00:00:00Z",
+      "eclipticLongitudeDeg": 147.482797,
+      "eclipticLatitudeDeg": 1.1694794
+    },
+    {
+      "body": "saturn",
+      "utc": "1945-08-15T00:00:00Z",
+      "eclipticLongitudeDeg": 109.2884811,
+      "eclipticLatitudeDeg": -0.2909988
+    },
+    {
+      "body": "saturn",
+      "utc": "1969-07-20T20:17:00Z",
+      "eclipticLongitudeDeg": 38.0979955,
+      "eclipticLatitudeDeg": -2.4284393
+    },
+    {
+      "body": "saturn",
+      "utc": "2000-01-01T12:00:00Z",
+      "eclipticLongitudeDeg": 40.3956366,
+      "eclipticLatitudeDeg": -2.4448533
+    },
+    {
+      "body": "saturn",
+      "utc": "2019-12-26T05:18:00Z",
+      "eclipticLongitudeDeg": 290.7234763,
+      "eclipticLatitudeDeg": 0.0588553
+    },
+    {
+      "body": "saturn",
+      "utc": "2020-12-21T18:20:00Z",
+      "eclipticLongitudeDeg": 300.4860497,
+      "eclipticLatitudeDeg": -0.3785116
+    },
+    {
+      "body": "saturn",
+      "utc": "2024-04-08T18:17:00Z",
+      "eclipticLongitudeDeg": 344.4549382,
+      "eclipticLatitudeDeg": -1.6844292
+    },
+    {
+      "body": "saturn",
+      "utc": "2035-06-01T00:00:00Z",
+      "eclipticLongitudeDeg": 121.6987259,
+      "eclipticLatitudeDeg": 0.5138646
+    },
+    {
+      "body": "saturn",
+      "utc": "2050-12-31T00:00:00Z",
+      "eclipticLongitudeDeg": 307.6751254,
+      "eclipticLatitudeDeg": -0.6418369
+    }
+  ]
+}

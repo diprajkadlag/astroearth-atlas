@@ -1,0 +1,21 @@
+{
+ "by": "scripts/generate-sky-data.ts",
+ "engine": "astronomy-engine 2.1.19",
+ "ayanamsa": "Lahiri (IAE anchor, IAU 1976 precession)",
+ "nodeModel": "mean",
+ "file": "sky-daily-1900-2050.bin",
+ "start": "1900-01-01T00:00:00.000Z",
+ "stepDays": 1,
+ "days": 55152,
+ "series": [
+  "sun",
+  "mercury",
+  "venus",
+  "mars",
+  "jupiter",
+  "saturn",
+  "rahu"
+ ],
+ "layout": "series-major: value[series * days + day]",
+ "encoding": "uint16le, longitude = value * 360 / 65536 (sidereal degrees)"
+}

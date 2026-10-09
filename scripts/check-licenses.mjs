@@ -60,15 +60,24 @@ function repositoryOf(pkg) {
     .replace(/\.git$/, "");
 }
 
-function licenseTexts(directory) {
-  if (!directory || !existsSync(directory)) return [];
-  return readdirSync(directory)
-    .filter((name) => LICENSE_FILE.test(name))
-    .sort()
-    .map((name) => ({
-      name,
-      text: readFileSync(join(directory, name), "utf8").replace(/\r\n/g, "\n").trim(),
-    }));
+/** Upstream license texts for packages whose npm tarball has no license file. */
+const FALLBACK_TEXTS = join(ROOT, "scripts", "license-texts");
+
+function licenseTexts(pkg) {
+  const directory = pkg.realpath ?? pkg.path;
+  const read = (path) => readFileSync(path, "utf8").replace(/\r\n/g, "\n").trim();
+  const bundled =
+    directory && existsSync(directory)
+      ? readdirSync(directory)
+          .filter((name) => LICENSE_FILE.test(name))
+          .sort()
+          .map((name) => ({ name, text: read(join(directory, name)) }))
+      : [];
+  if (bundled.length > 0) return bundled;
+  const fallback = join(FALLBACK_TEXTS, `${pkg.name.replace("/", "__")}.txt`);
+  return existsSync(fallback)
+    ? [{ name: "LICENSE (from the upstream repository; the npm package has none)", text: read(fallback) }]
+    : [];
 }
 
 /** Production packages, from npm's own dependency graph. */
@@ -101,11 +110,7 @@ function renderNotices(packages) {
     lines.push(`## ${pkg.name} ${pkg.version}`, "");
     lines.push(`- License: ${licenseOf(pkg)}`);
     lines.push(`- Source: ${repositoryOf(pkg)}`, "");
-    const texts = licenseTexts(pkg.realpath ?? pkg.path);
-    if (texts.length === 0) {
-      lines.push("No license file is included in the package.", "");
-    }
-    for (const { name, text } of texts) {
+    for (const { name, text } of licenseTexts(pkg)) {
       lines.push(`${name}:`, "", "````text", text, "````", "");
     }
   }
@@ -123,6 +128,17 @@ if (rejected.length > 0) {
   console.error(
     `\n${rejected.length} production package(s) have a license that may not ship:\n` +
       rejected.map((pkg) => `  ${pkg.name}@${pkg.version}: ${licenseOf(pkg)}`).join("\n"),
+  );
+  process.exit(1);
+}
+
+// Permissive licenses still require their notice to travel with the code.
+const withoutText = packages.filter((pkg) => licenseTexts(pkg).length === 0);
+if (withoutText.length > 0) {
+  console.error(
+    "\nThese production packages ship no license text. Add the upstream text as " +
+      "scripts/license-texts/<package>.txt:\n" +
+      withoutText.map((pkg) => `  ${pkg.name}@${pkg.version}`).join("\n"),
   );
   process.exit(1);
 }

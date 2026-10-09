@@ -33,10 +33,15 @@ npm run lint
 npm test
 npm run build
 npm run licenses   # production licenses and THIRD_PARTY_NOTICES.md
+npm run data:check # precomputed sky data matches the engine
 npm run e2e        # browser checks against the built site (port 4748)
 ```
 
 The first `npm run e2e` needs a browser: `npx playwright install chromium`.
+
+After a change to `src/engine/`, regenerate the precomputed sky data with
+`npm run data` (about 10 seconds). `docs/METHOD.md` states every convention
+and how it was checked, including a comparison with NASA JPL Horizons.
 
 ## Credits
 

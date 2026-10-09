@@ -45,6 +45,9 @@ jobs:
       - name: Production licenses and notices
         run: npm run licenses
 
+      - name: Sky data matches the engine
+        run: npm run data:check
+
       - name: Build
         run: npm run build
 
