@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Test output
+coverage/
+e2e-artifacts/
+playwright-report/
+test-results/
+
+# Environment and logs
+.env*
+!.env.example
+*.log
+
+# OS, editor and sync-client files
+.DS_Store
+Thumbs.db
+desktop.ini
+Desktop.ini
+.sync_*.db*
+.nextcloudsync.log
+.vscode/*
+!.vscode/extensions.json
+
+# Local working notes: the reasoning behind decisions, for later sessions.
+# Useful to whoever maintains the code, noise to whoever only reads it.
+context/

@@ -1,0 +1,10 @@
+# Keep line endings identical on Windows and in CI.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ktx2 binary
+*.woff2 binary
+*.bin binary

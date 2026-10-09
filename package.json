@@ -1,0 +1,65 @@
+{
+  "name": "medini-atlas",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Medini Atlas: an interactive 3D Earth and planetary time waves for Vedic mundane astrology (Lahiri sidereal zodiac), 1900 to 2050.",
+  "keywords": [
+    "jyotish",
+    "vedic-astrology",
+    "mundane-astrology",
+    "astronomy",
+    "threejs",
+    "webgl",
+    "data-visualization"
+  ],
+  "license": "MIT",
+  "author": "Dipraj Kadlag",
+  "homepage": "https://github.com/diprajkadlag/medini-atlas#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/diprajkadlag/medini-atlas.git"
+  },
+  "bugs": {
+    "url": "https://github.com/diprajkadlag/medini-atlas/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "npm@11.16.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "e2e": "playwright test",
+    "licenses": "node scripts/check-licenses.mjs",
+    "licenses:write": "node scripts/check-licenses.mjs --write"
+  },
+  "dependencies": {
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.64.0",
+    "@tailwindcss/vite": "4.3.3",
+    "@types/node": "24.19.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "eslint": "10.12.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "eslint-plugin-react-refresh": "0.5.7",
+    "globals": "17.13.0",
+    "tailwindcss": "4.3.3",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.71.1",
+    "vite": "8.3.4",
+    "vitest": "5.0.3"
+  }
+}

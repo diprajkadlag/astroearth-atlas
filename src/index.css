@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+/*
+ * Placeholder tokens for the app shell. The real palette, type and motion
+ * rules come from the design direction chosen in milestone M2 (DESIGN.md).
+ * Fonts stay system fonts until then: no web font may load from another origin.
+ */
+@theme {
+  --color-surface: #0b1020;
+  --color-ink: #e8e6df;
+  --color-muted: #a3abbb;
+  --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
