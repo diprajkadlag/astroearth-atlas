@@ -1,9 +1,10 @@
 # Design rules
 
 AstroEarth Atlas uses the **Yantra** direction: the app is an observatory
-instrument for reading the sky against time. The user chose it on 2026-10-09
-from 3 directions on a private design canvas (Yantra, Panchang and Akasha).
-Fable reviewed the canvas and recommended Yantra.
+instrument for reading the sky against time. The owner chose it on 2026-10-09
+from 3 design studies (Yantra, Panchang and Akasha), which were drawn with AI
+assistance. An AI reviewer (the model Fable) also compared them and
+recommended Yantra.
 
 Read this file before any change to the interface. The tokens are in
 `src/design/tokens.css` (CSS) and `src/design/palette.ts` (canvas and WebGL).
@@ -58,8 +59,9 @@ Read this file before any change to the interface. The tokens are in
 
 ### Graha colours
 
-The 8 hue families of the validated categorical palette (the dataviz
-reference, dark steps), one per graha, in the fixed slot order:
+The 8 hue families of a validated categorical palette for charts (the dark
+steps of a data-visualisation reference palette), one per graha, in the fixed
+slot order:
 
 | Slot | Graha | Token | Hex |
 |---|---|---|---|
@@ -72,7 +74,10 @@ reference, dark steps), one per graha, in the fixed slot order:
 | 7 | Saturn | `graha-saturn` | `#9085e9` |
 | 8 | Mars | `graha-mars` | `#e66767` |
 
-Validator results on 2026-10-09, for both `#0e1330` and `#070a1c`:
+Results of a palette validator on 2026-10-09, for both `#0e1330` and
+`#070a1c`. The validator checks lightness and chroma in OKLCH, the colour
+distance ΔE (OKLab × 100) of neighbouring slots for normal vision and under
+simulated protanopia and deuteranopia, and the contrast on each surface:
 
 - Lightness band (OKLCH L 0.48 to 0.67): all 8 pass.
 - Chroma floor (0.10): all 8 pass.
@@ -94,11 +99,10 @@ Rules that follow from the results:
 - The Sun mark has rays. Mars is a plain disc. The nodes are drawn as an axis.
 - Ketu uses the Rahu hue with a dotted line.
 - A colour follows its graha. A filter never repaints the remaining grahas.
-- After any colour change, run the validator again for both surfaces:
-
-  ```
-  node <dataviz skill>/scripts/validate_palette.js "#3987e5,#d95926,#199e70,#c98500,#d55181,#008300,#9085e9,#e66767" --mode dark --surface "#0E1330"
-  ```
+- After any colour change, check the 8 colours again on both surfaces against
+  the thresholds above: the lightness band, the chroma floor, ΔE of
+  neighbouring slots (target 8 under colour blindness, floor 15 for normal
+  vision) and a contrast of at least 3:1.
 
 ## 4. Type
 
@@ -223,7 +227,8 @@ CREDITS.md). Do not load a font from another origin.
 
 ## 10. Ban lists
 
-From Anthropic's frontend guide for Opus 5.5:
+Defaults of AI-generated interfaces, from Anthropic's frontend design guidance
+for its Claude models:
 
 - a cream or off-white background;
 - an italic accent word in a headline;
@@ -231,7 +236,8 @@ From Anthropic's frontend guide for Opus 5.5:
 - monospace labels;
 - pill-shaped buttons.
 
-From the frontend-design skill:
+More defaults of generated web pages, from Anthropic's "frontend-design" skill
+(a design guide for AI coding assistants, Apache-2.0):
 
 - cream with terracotta or clay;
 - near-black with one acid accent;
