@@ -23,7 +23,7 @@ Read this file before any change to the interface. The tokens are in
 
 | Topic | Rule |
 |---|---|
-| Earth motion | For a step under 1 day (a zoomed timeline, live mode), the Earth shows the true time of day. For a step of 1 day or more (day steps, play at 1 day per second or faster), the Earth shows 00:00 UTC of the date. The sky ring always shows the true instant. |
+| Earth motion | For a step under 1 day (a zoomed timeline, live mode), the Earth shows the true time of day. For a step of 1 day or more (day steps, play at 1 day per second or faster), the Earth shows 00:00 UTC of the date. A jump to an event shows the event's own time. The sky ring always shows the true instant. |
 | Koorma Chakra | The global mode shows first, with the label "modern extension". The classical mode is one click away. The centre region has a radius of 5.5 degrees around Mathura. |
 | Koorma glow | 3 strengths. A legend gives the reason for each lit region. Strongest: an eclipse in the region's nakshatra (eclipse ivory). Middle: a station or a retrograde malefic (brass). Soft: a transit of Saturn, Mars, Rahu or Ketu (brass at 50 %). |
 | Names | English sign names (Aries). Sanskrit nakshatra names in Latin script, without diacritics (Krittika). The sidebar adds the Devanagari name as a second label (Krittika कृत्तिका). |
@@ -46,7 +46,7 @@ Read this file before any change to the interface. The tokens are in
 | `muted` | `#a8a493` | Secondary text | 7.3 / 7.9 / 6.7 |
 | `rule` | ivory at 16 % | Hairlines between rows | not text |
 | `rule-strong` | ivory at 32 % | Scale baselines, input borders | not text |
-| `brass` | `#c9a25e` | The date cursor, focus, the primary action, the Koorma glow | 7.6 / 8.2 / 7.0 |
+| `brass` | `#c9a25e` | The date cursor, focus and the selected event, the primary action, the Koorma glow | 7.6 / 8.2 / 7.0 |
 | `eclipse` | `#f6eeda` | Reserved for eclipses | 15.7 / 17.0 / 14.5 |
 
 - Each accent has one job. Do not use brass or eclipse ivory for anything
@@ -153,10 +153,16 @@ CREDITS.md). Do not load a font from another origin.
 - Longitude increases counter-clockwise, seen from ecliptic north (scene +Z).
 - The Rahu-Ketu axis is a verdigris line through the Earth.
 - A "Not to scale" label sits in a corner of the scene (caption, muted).
-- The camera starts about 24 degrees above the ecliptic.
+- The camera starts 32 degrees above the ecliptic, facing Mathura. On screens
+  under 480 px the ring, not the dial plate, fills the frame.
 - The Earth uses NASA Blue Marble (day) and Black Marble (night) images, a
   terminator from the Sun direction and a thin atmosphere rim. No political
   borders. Koorma regions are soft glows, not lines.
+- Pins ride on the Earth: an ivory pin with a brass ring for the selected
+  event, and eclipse-ivory pins for eclipses within 7 days.
+- A retrograde graha shows the arc of its current loop, from station to
+  station, just outside the ring, in its own colour.
+- A graha label that had to move away from its mark gets a thin leader line.
 
 ## 7. Timeline
 
@@ -169,6 +175,17 @@ CREDITS.md). Do not load a font from another origin.
 - The time axis has a tick each month, a label each quarter and the year in
   bold.
 - The sky table is the table view of the chart.
+- The event track runs along the top of each view. Each kind has its own
+  shape: a disc with a bite (solar eclipse), a ring (lunar eclipse), a diamond
+  (world event), 2 rings (Jupiter-Saturn conjunction). Kala Sarpa windows are
+  verdigris bars. A legend under the view names every shape.
+- The Cycles view draws, for up to 4 pairs, the cosine of the angle between
+  2 grahas on one axis from -1 to +1. The lines are ivory with 4 dash
+  patterns and a direct label at the right end. They never use graha colours.
+- Pointer model: a click sets the date or opens the event under the pointer.
+  A drag pans. Ctrl or Cmd with the wheel zooms at the pointer. Shift with the
+  wheel pans. The upper band of the date ruler is the brush: drag the band to
+  pan, drag an edge to zoom.
 
 ## 8. Motion
 

@@ -24,7 +24,8 @@ export function useUrlSync(): void {
     let timer = 0;
     let written = window.location.hash;
     const unsubscribe = useAtlas.subscribe((state) => {
-      if (state.playing) return;
+      // Playback and live mode change the date too often for the address bar.
+      if (state.playing || state.live) return;
       window.clearTimeout(timer);
       timer = window.setTimeout(() => {
         const hash = serializeView(state);
@@ -42,9 +43,17 @@ export function useUrlSync(): void {
   }, []);
 }
 
-/** Moves the date while playback runs, one step per animation frame. */
+/** Moves the date while playback runs, one step per animation frame. Live mode follows the clock. */
 export function usePlayback(): void {
   const playing = useAtlas((state) => state.playing);
+  const live = useAtlas((state) => state.live);
+
+  useEffect(() => {
+    if (!live) return;
+    const timer = window.setInterval(() => useAtlas.getState().tickLive(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, [live]);
+
   useEffect(() => {
     if (!playing) return;
     let frame = 0;

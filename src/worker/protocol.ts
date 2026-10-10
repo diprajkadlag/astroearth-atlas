@@ -31,5 +31,28 @@ export interface ErrorResponse {
   message: string;
 }
 
-export type WorkerRequest = SampleRequest;
-export type WorkerResponse = SampleResponse | ErrorResponse;
+/** The Cycles view: cos(longitude of a minus longitude of b) for each pair. */
+export interface CycleRequest {
+  type: "cycles";
+  requestId: number;
+  pairs: [GrahaId, GrahaId][];
+  startMs: number;
+  endMs: number;
+  columns: number;
+}
+
+export interface CycleSeries {
+  /** "a-b", for example "jupiter-saturn". */
+  pair: string;
+  /** x (milliseconds) and y (cosine, -1 to 1) pairs. */
+  packed: Float64Array;
+}
+
+export interface CycleResponse {
+  type: "cycles";
+  requestId: number;
+  series: CycleSeries[];
+}
+
+export type WorkerRequest = SampleRequest | CycleRequest;
+export type WorkerResponse = SampleResponse | CycleResponse | ErrorResponse;

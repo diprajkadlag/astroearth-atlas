@@ -1,7 +1,9 @@
 import { Suspense, lazy } from "react";
 
 import { t } from "./i18n/index.ts";
+import { EventsPanel } from "./panels/EventsPanel.tsx";
 import { Header } from "./panels/Header.tsx";
+import { LiveSummary, RulesPanel } from "./panels/RulesPanel.tsx";
 import { SkyTable } from "./panels/SkyTable.tsx";
 import { usePlayback, useUrlSync } from "./state/hooks.ts";
 import { TimelineSection } from "./timeline/TimelineSection.tsx";
@@ -20,8 +22,9 @@ function ScenePlaceholder({ className }: { className: string }) {
 
 /**
  * The page (DESIGN.md, layout). On a phone the order is the scene, the
- * timeline, then the sky table. From 1024 px the sky table moves beside the
- * scene, and the timeline spans the full width below them.
+ * timeline, the sky table with the rules, then the events. From 1024 px the
+ * sky table moves beside the scene, the timeline spans the full width below
+ * them, and the events and the rules share the last row.
  */
 export function App() {
   useUrlSync();
@@ -36,7 +39,10 @@ export function App() {
         </Suspense>
         <TimelineSection className="lg:col-span-2 lg:row-start-2" />
         <SkyTable className="lg:col-start-2 lg:row-start-1" />
+        <RulesPanel className="lg:col-start-2 lg:row-start-3" />
+        <EventsPanel className="lg:col-start-1 lg:row-start-3" />
       </main>
+      <LiveSummary />
       <footer className="text-muted mt-auto px-4 pt-8 pb-6 text-small sm:px-8">
         <p className="max-w-prose">{t("disclaimer")}</p>
         <p className="mt-1 max-w-prose">{t("creditsEarth")}</p>

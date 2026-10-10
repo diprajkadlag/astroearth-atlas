@@ -22,6 +22,9 @@ import {
 } from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
+import { between, firstAtOrAfter, type Station } from "../data/skyEvents.ts";
+import { skyEventsNow, useSkyEvents } from "../data/skyEventsLoader.ts";
+import { findTimelineEvent, timelineEvents } from "../data/timelineEvents.ts";
 import { GRAHA_IDS, NAKSHATRAS, RASIS, type GrahaId } from "../engine/zodiac.ts";
 import { GRAHA_COLOR_TOKENS, UI_COLORS, grahaColor, withAlpha } from "../design/palette.ts";
 import { grahaAbbreviation } from "../i18n/index.ts";
@@ -145,6 +148,11 @@ interface SceneObjects {
   markers: Map<GrahaId, Mesh>;
   axis: Line;
   sunLight: DirectionalLight;
+  /** The degree ticks draw in during the first-load animation. */
+  degreeTicks: LineSegments;
+  /** Pins ride on the Earth (children of its mesh): the selected event and eclipses within 7 days. */
+  selectedPin: Mesh;
+  eclipsePins: Mesh[];
   dispose(): void;
 }
 
@@ -160,8 +168,9 @@ function buildScene(): SceneObjects {
   root.add(plate);
 
   const ticks = ringTicks();
+  const degreeTicks = segmentsObject(ticks.degrees, lineMaterial(UI_COLORS.ivory, 0.42));
   root.add(
-    segmentsObject(ticks.degrees, lineMaterial(UI_COLORS.ivory, 0.42)),
+    degreeTicks,
     segmentsObject(ticks.nakshatras, lineMaterial(UI_COLORS.ivory, 0.8)),
     segmentsObject(ticks.signs, lineMaterial(UI_COLORS.ivory, 1)),
     lineObject(ticks.inner, lineMaterial(UI_COLORS.ivory, 0.9)),
@@ -174,6 +183,16 @@ function buildScene(): SceneObjects {
   const earth = new Mesh(new SphereGeometry(1, 128, 64).rotateX(Math.PI / 2), earthMaterial);
   earth.matrixAutoUpdate = false;
   root.add(earth);
+
+  const selectedPin = new Mesh(new SphereGeometry(0.026, 20, 12), new MeshBasicMaterial({ color: UI_COLORS.ivory }));
+  selectedPin.visible = false;
+  earth.add(selectedPin);
+  const eclipsePins = Array.from({ length: 3 }, () => {
+    const pin = new Mesh(new SphereGeometry(0.022, 20, 12), new MeshBasicMaterial({ color: UI_COLORS.eclipse }));
+    pin.visible = false;
+    earth.add(pin);
+    return pin;
+  });
 
   const markers = new Map<GrahaId, Mesh>();
   for (const id of GRAHA_IDS) {
@@ -204,6 +223,9 @@ function buildScene(): SceneObjects {
     markers,
     axis,
     sunLight,
+    degreeTicks,
+    selectedPin,
+    eclipsePins,
     dispose() {
       root.traverse((object) => {
         if (object instanceof Mesh || object instanceof Line) {
@@ -216,6 +238,72 @@ function buildScene(): SceneObjects {
       earthMaterial.uniforms.nightMap.value?.dispose();
     },
   };
+}
+
+const PIN_RADIUS = 1.012;
+const ECLIPSE_PIN_WINDOW_MS = 7 * 86_400_000;
+const TRAIL_RADIUS = RING_RADIUS + 0.055;
+const INTRO_MS = 1100;
+
+function placePin(pin: Mesh, latitudeDeg: number, longitudeDeg: number): void {
+  const v = geoToBody(latitudeDeg, longitudeDeg);
+  pin.position.set(v[0] * PIN_RADIUS, v[1] * PIN_RADIUS, v[2] * PIN_RADIUS);
+  pin.visible = true;
+}
+
+/** The selected event (world event with a place, or eclipse) and eclipses within 7 days get pins. */
+function updatePins(objects: SceneObjects, instantMs: number, eventId: string | null): void {
+  const sky = skyEventsNow();
+  const selected = findTimelineEvent(timelineEvents(sky), eventId);
+  const place =
+    selected?.world?.place ??
+    (selected?.eclipse ? { latitudeDeg: selected.eclipse.latitudeDeg, longitudeDeg: selected.eclipse.longitudeDeg } : null);
+  if (place) placePin(objects.selectedPin, place.latitudeDeg, place.longitudeDeg);
+  else objects.selectedPin.visible = false;
+  const near = sky
+    ? between(sky.eclipses, instantMs - ECLIPSE_PIN_WINDOW_MS, instantMs + ECLIPSE_PIN_WINDOW_MS).filter(
+        (eclipse) => eclipse !== selected?.eclipse,
+      )
+    : [];
+  objects.eclipsePins.forEach((pin, index) => {
+    const eclipse = near[index];
+    if (eclipse) placePin(pin, eclipse.latitudeDeg, eclipse.longitudeDeg);
+    else pin.visible = false;
+  });
+}
+
+/** The current retrograde loop of a graha: the stations before and after the instant. */
+function retrogradeLoop(stations: readonly Station[], id: GrahaId, instantMs: number): { fromDeg: number; toDeg: number } | null {
+  const index = firstAtOrAfter(stations, instantMs);
+  let before: Station | undefined;
+  for (let k = index - 1; k >= 0 && k >= index - 40; k -= 1) {
+    if (stations[k]?.graha === id) {
+      before = stations[k];
+      break;
+    }
+  }
+  let after: Station | undefined;
+  for (let k = index; k < stations.length && k < index + 40; k += 1) {
+    if (stations[k]?.graha === id) {
+      after = stations[k];
+      break;
+    }
+  }
+  if (before?.turns !== "retrograde" || after?.turns !== "direct") return null;
+  return { fromDeg: before.longitudeDeg, toDeg: after.longitudeDeg };
+}
+
+/** Starts the degree ticks at 0 and the camera a little farther out, for the first-load animation. */
+function startIntro(objects: SceneObjects): void {
+  objects.degreeTicks.geometry.setDrawRange(0, 0);
+}
+
+/** One frame of the first-load animation. Returns true while it runs. */
+function stepIntro(objects: SceneObjects, progress: number): boolean {
+  const total = objects.degreeTicks.geometry.getAttribute("position").count;
+  const ticks = Math.min(1, progress / 0.7);
+  objects.degreeTicks.geometry.setDrawRange(0, progress >= 1 ? Infinity : Math.floor(total * ticks));
+  return progress < 1;
 }
 
 /** The dial plate shrinks to the framed ring on narrow screens, so the canvas never cuts it. */
@@ -262,6 +350,7 @@ function drawOverlay(
   { canvas, camera, width, height, dpr }: OverlayContext,
   sky: ReturnType<typeof readSky>["sky"],
   markers: Map<GrahaId, Mesh>,
+  extras: { instantMs: number; stations: readonly Station[]; selectedPin: Mesh },
 ): void {
   const pixelWidth = Math.round(width * dpr);
   const pixelHeight = Math.round(height * dpr);
@@ -278,6 +367,48 @@ function drawOverlay(
   ctx.textBaseline = "middle";
 
   const cameraPosition: Vec3 = [camera.position.x, camera.position.y, camera.position.z];
+
+  // Retrograde trails: the arc of the current loop, just outside the ring.
+  for (const graha of sky.grahas) {
+    if (!graha.retrograde || graha.id === "sun" || graha.id === "moon" || graha.id === "rahu" || graha.id === "ketu") continue;
+    const loop = retrogradeLoop(extras.stations, graha.id, extras.instantMs);
+    if (!loop) continue;
+    let sweep = loop.fromDeg - loop.toDeg;
+    if (sweep < 0) sweep += 360;
+    ctx.strokeStyle = withAlpha(grahaColor(graha.id), 0.85);
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    let open = false;
+    for (let step = 0; step <= Math.ceil(sweep * 2); step += 1) {
+      const longitude = loop.fromDeg - Math.min(sweep, step / 2);
+      const point = eclipticToScene(longitude, 0, TRAIL_RADIUS);
+      if (isHiddenByEarth(cameraPosition, point)) {
+        open = false;
+        continue;
+      }
+      const { x, y } = project(point, camera, width, height);
+      if (open) ctx.lineTo(x, y);
+      else ctx.moveTo(x, y);
+      open = true;
+    }
+    ctx.stroke();
+  }
+
+  // The selected event: a brass ring around its pin, when the pin faces the camera.
+  if (extras.selectedPin.visible) {
+    const world = new Vector3();
+    extras.selectedPin.getWorldPosition(world);
+    const facing = world.x * (cameraPosition[0] - world.x) + world.y * (cameraPosition[1] - world.y) + world.z * (cameraPosition[2] - world.z);
+    if (facing > 0) {
+      const { x, y } = project([world.x, world.y, world.z], camera, width, height);
+      ctx.strokeStyle = UI_COLORS.brass;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(x, y, 9, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  }
   const centre = project([0, 0, 0], camera, width, height);
   const visible = sky.grahas
     .map((graha) => {
@@ -405,7 +536,25 @@ export function SkyScene({ overlayRef, apiRef, interactive }: SkySceneProps) {
 
   const controlsRef = useRef<OrbitControls | null>(null);
   const userZoomedRef = useRef(false);
-  const lastRef = useRef({ instantMs: Number.NaN, earthMs: Number.NaN });
+  const lastRef = useRef<{ instantMs: number; earthMs: number; eventId: string | null; sky: unknown }>({
+    instantMs: Number.NaN,
+    earthMs: Number.NaN,
+    eventId: null,
+    sky: undefined,
+  });
+  const introRef = useRef<number | null>(null);
+
+  // The sky events load after the page; draw again when they arrive (pins, trails).
+  const skyEvents = useSkyEvents();
+  useEffect(() => invalidate(), [skyEvents, invalidate]);
+
+  // DESIGN.md, motion: one orchestrated moment on first load, skipped with reduced motion.
+  useLayoutEffect(() => {
+    const reduced = typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) return;
+    startIntro(objects);
+    introRef.current = performance.now();
+  }, [objects]);
 
   // Below 480 px the ring has no sign names outside it, so the ring fills the frame.
   const framedPlateRadius = size.width < 480 ? RING_RADIUS + 0.3 : PLATE_RADIUS;
@@ -582,8 +731,10 @@ export function SkyScene({ overlayRef, apiRef, interactive }: SkySceneProps) {
     const atlas = useAtlas.getState();
     const earthMs = earthInstantMs(atlas.instantMs, currentStepMs(atlas));
     const reading = readSky(atlas.instantMs);
+    const previous = lastRef.current;
+    const instantChanged = atlas.instantMs !== previous.instantMs;
 
-    if (atlas.instantMs !== lastRef.current.instantMs || earthMs !== lastRef.current.earthMs) {
+    if (instantChanged || earthMs !== previous.earthMs) {
       const earthMatrix = earthToScene(new Date(earthMs));
       matrixFromRows(objects.earth, earthMatrix);
       objects.earth.updateMatrixWorld(true);
@@ -608,7 +759,21 @@ export function SkyScene({ overlayRef, apiRef, interactive }: SkySceneProps) {
         attribute.needsUpdate = true;
         objects.axis.geometry.computeBoundingSphere();
       }
-      lastRef.current = { instantMs: atlas.instantMs, earthMs };
+    }
+
+    const sky = skyEventsNow();
+    if (instantChanged || atlas.eventId !== previous.eventId || sky !== previous.sky) {
+      updatePins(objects, atlas.instantMs, atlas.eventId);
+    }
+    lastRef.current = { instantMs: atlas.instantMs, earthMs, eventId: atlas.eventId, sky };
+
+    // First-load animation: the degree ticks draw in, the camera settles.
+    if (introRef.current !== null) {
+      const progress = Math.min(1, (performance.now() - introRef.current) / INTRO_MS);
+      const ease = 1 - (1 - progress) ** 3;
+      if (!userZoomedRef.current) camera.position.setLength(fitDistance * (1 + 0.25 * (1 - ease)));
+      if (stepIntro(objects, progress)) invalidate();
+      else introRef.current = null;
     }
 
     // Damping keeps the camera moving for a few frames after a drag.
@@ -620,6 +785,7 @@ export function SkyScene({ overlayRef, apiRef, interactive }: SkySceneProps) {
         { canvas, camera, width: size.width, height: size.height, dpr: gl.getPixelRatio() },
         reading.sky,
         objects.markers,
+        { instantMs: atlas.instantMs, stations: sky?.stations ?? [], selectedPin: objects.selectedPin },
       );
     }
 

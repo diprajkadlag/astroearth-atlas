@@ -9,7 +9,7 @@ export const MIN_INSTANT_MS = Date.UTC(1900, 0, 1);
 export const MAX_INSTANT_MS = Date.UTC(2050, 11, 31);
 
 /** Limits of the visible timeline span. */
-export const MIN_SPAN_MS = 2 * DAY_MS;
+export const MIN_SPAN_MS = DAY_MS;
 export const MAX_SPAN_MS = MAX_INSTANT_MS - MIN_INSTANT_MS;
 export const DEFAULT_SPAN_MS = 12 * YEAR_MS;
 

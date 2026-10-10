@@ -126,6 +126,40 @@ the Sun, in steps of 12°. Tithis 1 to 15 are Shukla (waxing), 16 to 30
 Krishna (waning). Tithi 15 is Purnima and tithi 30 Amavasya. A panchang gives
 the tithi at local sunrise, so it can differ from the tithi at 00:00 UTC.
 
+## Cycles view
+
+For a pair of grahas, the Cycles view draws the cosine of the angle between
+their sidereal longitudes. The value is +1 at a conjunction, 0 at a square and
+-1 at an opposition. The cosine has no wrap at 360°, so each pair is one
+unbroken line. The same angle holds in the tropical zodiac.
+
+## World events
+
+- **Selection.** Major events with a clear start date, global events and key
+  events of India. No event is added or removed because of the sky at its
+  date. Every title and summary is written in own words. The app stores facts
+  and the Wikidata item of each event (CC0), never Wikipedia text.
+- **Time rule.** An event with a stated time uses that UTC time. An event
+  known to the day uses 12:00 local mean time at its place (4 minutes per
+  degree of longitude east of Greenwich), or 12:00 UTC without a place. An
+  event known to the month uses 12:00 UTC on the 1st.
+- **Moon range.** A day-precision event card shows where the Moon stood at
+  the start and the end of that local day, because the Moon moves about 13°
+  in a day.
+- **Eclipses and conjunctions** on the timeline come from the precomputed sky
+  events (see above). Their cards give calculated facts only.
+
+## Sky moments
+
+The shortcuts under "Sky moments" are calculated facts, checked by
+`tests/presets.test.ts`:
+
+- 5 February 1962, 00:00 UTC: 8 grahas in Capricorn (all 7 planets and Ketu).
+- 26 December 2019, 00:00 UTC: 6 grahas in Sagittarius (Sun, Moon, Mercury,
+  Jupiter, Saturn and Ketu).
+- 21 December 2020, 18:26 UTC: the conjunction of Jupiter and Saturn in
+  Capricorn.
+
 ## Comparison with Drik Panchang
 
 On 2026-10-09, a check compared the engine with the sidereal planetary

@@ -83,6 +83,16 @@ function useCoarsePointer(): boolean {
   );
 }
 
+function subscribeToFullscreen(onChange: () => void): () => void {
+  document.addEventListener("fullscreenchange", onChange);
+  return () => document.removeEventListener("fullscreenchange", onChange);
+}
+
+/** The element in fullscreen, kept current from the browser's events. */
+function useFullscreenElement(): Element | null {
+  return useSyncExternalStore(subscribeToFullscreen, () => document.fullscreenElement, () => null);
+}
+
 function Fallback({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="flex h-full flex-col items-start justify-center gap-3 p-6">
@@ -109,6 +119,11 @@ const TURN_KEYS: Readonly<Record<string, [number, number]>> = {
 /** The scene section: the WebGL canvas, the label layer, and their fallbacks. */
 export function SceneView({ className = "" }: { className?: string }) {
   const overlayRef = useRef<HTMLCanvasElement | null>(null);
+  const boxRef = useRef<HTMLDivElement | null>(null);
+  const fullscreenElement = useFullscreenElement();
+  // The scene box carries data-testid="scene"; reading the ref during render is not allowed.
+  const fullscreen = fullscreenElement?.getAttribute("data-testid") === "scene";
+  const canFullscreen = typeof document !== "undefined" && document.fullscreenEnabled;
   const apiRef = useRef<ViewApi | null>(null);
   // Checks support before React Three Fiber builds a renderer.
   const [capability, setCapability] = useState<WebGLCapability>(() => probeWebGLCapability());
@@ -173,6 +188,7 @@ export function SceneView({ className = "" }: { className?: string }) {
         {t("sceneTitle")}
       </h2>
       <div
+        ref={boxRef}
         role="group"
         aria-label={t("sceneLabel", { date: formatDate(instantMs) })}
         aria-describedby="scene-help"
@@ -209,6 +225,19 @@ export function SceneView({ className = "" }: { className?: string }) {
         <p id="scene-help" className="sr-only">
           {t("sceneHelp")}
         </p>
+
+        {capability.status === "supported" && canFullscreen ? (
+          <button
+            type="button"
+            onClick={() => {
+              if (fullscreen) void document.exitFullscreen();
+              else void boxRef.current?.requestFullscreen();
+            }}
+            className="absolute top-2 right-2 z-10 min-h-11 rounded-control bg-dial/90 px-3 text-small hover:bg-raised sm:min-h-10"
+          >
+            {fullscreen ? t("fullscreenExit") : t("fullscreenEnter")}
+          </button>
+        ) : null}
 
         {lost ? (
           <p role="status" className="absolute inset-x-0 top-3 text-center text-small">

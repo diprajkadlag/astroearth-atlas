@@ -1,7 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 
 import type { GrahaId } from "../engine/zodiac.ts";
-import type { SampleRequest, SeriesSamples, WorkerResponse } from "../worker/protocol.ts";
+import type {
+  CycleRequest,
+  CycleSeries,
+  SampleRequest,
+  SeriesSamples,
+  WorkerRequest,
+  WorkerResponse,
+} from "../worker/protocol.ts";
 
 let worker: Worker | null = null;
 let nextRequestId = 1;
@@ -21,6 +28,22 @@ function sampler(): Worker {
   return worker;
 }
 
+/**
+ * Sends one request after a short pause (zooming and resizing send many) and
+ * keeps only the newest answer. Returns a cancel function.
+ */
+function schedule(build: (requestId: number) => WorkerRequest, onAnswer: (response: WorkerResponse) => void): () => void {
+  const requestId = nextRequestId++;
+  const timer = window.setTimeout(() => {
+    listeners.set(requestId, onAnswer);
+    sampler().postMessage(build(requestId));
+  }, 40);
+  return () => {
+    window.clearTimeout(timer);
+    listeners.delete(requestId);
+  };
+}
+
 export interface SampleSet {
   startMs: number;
   endMs: number;
@@ -28,44 +51,68 @@ export interface SampleSet {
   series: Map<GrahaId, SeriesSamples>;
 }
 
-/**
- * Drawable lines for `ids` over [startMs, endMs] at `columns` pixel columns.
- * Only the newest request counts: an answer to an older request is dropped.
- */
+/** Drawable lane lines for `ids` over [startMs, endMs] at `columns` pixel columns. */
 export function useSamples(ids: readonly GrahaId[], startMs: number, endMs: number, columns: number): SampleSet | null {
   const [samples, setSamples] = useState<SampleSet | null>(null);
   const latest = useRef(0);
   const key = ids.join(",");
 
   useEffect(() => {
-    if (columns < 1 || !(endMs > startMs)) return;
-    const requestId = nextRequestId++;
-    latest.current = requestId;
-    // Wait for a short pause in zooming or resizing before asking.
-    const timer = window.setTimeout(() => {
-      listeners.set(requestId, (response) => {
-        if (latest.current !== requestId || response.type !== "samples") return;
-        setSamples({
-          startMs,
-          endMs,
-          columns,
-          series: new Map(response.series.map((series) => [series.id, series])),
-        });
-      });
-      const request: SampleRequest = {
+    if (columns < 1 || !(endMs > startMs) || key === "") return;
+    const token = ++latest.current;
+    return schedule(
+      (requestId): SampleRequest => ({
         type: "sample",
         requestId,
         ids: key.split(",") as GrahaId[],
         startMs,
         endMs,
         columns,
-      };
-      sampler().postMessage(request);
-    }, 40);
-    return () => {
-      window.clearTimeout(timer);
-      listeners.delete(requestId);
-    };
+      }),
+      (response) => {
+        if (latest.current !== token || response.type !== "samples") return;
+        setSamples({ startMs, endMs, columns, series: new Map(response.series.map((series) => [series.id, series])) });
+      },
+    );
+  }, [key, startMs, endMs, columns]);
+
+  return samples;
+}
+
+export interface CycleSet {
+  startMs: number;
+  endMs: number;
+  series: Map<string, CycleSeries>;
+}
+
+/** Cycles lines (cosine of the angle between 2 grahas) for each pair. */
+export function useCycleSamples(
+  pairs: readonly [GrahaId, GrahaId][],
+  startMs: number,
+  endMs: number,
+  columns: number,
+): CycleSet | null {
+  const [samples, setSamples] = useState<CycleSet | null>(null);
+  const latest = useRef(0);
+  const key = pairs.map((pair) => pair.join("-")).join(",");
+
+  useEffect(() => {
+    if (columns < 1 || !(endMs > startMs) || key === "") return;
+    const token = ++latest.current;
+    return schedule(
+      (requestId): CycleRequest => ({
+        type: "cycles",
+        requestId,
+        pairs: key.split(",").map((pair) => pair.split("-") as [GrahaId, GrahaId]),
+        startMs,
+        endMs,
+        columns,
+      }),
+      (response) => {
+        if (latest.current !== token || response.type !== "cycles") return;
+        setSamples({ startMs, endMs, series: new Map(response.series.map((series) => [series.pair, series])) });
+      },
+    );
   }, [key, startMs, endMs, columns]);
 
   return samples;

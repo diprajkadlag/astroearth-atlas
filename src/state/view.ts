@@ -14,6 +14,26 @@ import {
 /** A timeline lane. The Rahu lane shows Rahu and Ketu together. */
 export type LaneId = Exclude<GrahaId, "ketu">;
 export type KoormaMode = "global" | "classical";
+/** Lanes: one graha per lane. Cycles: the cosine of the angle between 2 grahas. */
+export type TimelineView = "lanes" | "cycles";
+
+/** Pairs offered in the Cycles view (plan, M4). At most 4 show at once. */
+export const CYCLE_PAIRS = [
+  "jupiter-saturn",
+  "saturn-rahu",
+  "jupiter-rahu",
+  "mars-saturn",
+  "mars-jupiter",
+  "sun-saturn",
+  "sun-moon",
+] as const;
+export type CyclePair = (typeof CYCLE_PAIRS)[number];
+export const MAX_CYCLE_PAIRS = 4;
+
+export function pairGrahas(pair: CyclePair): [LaneId, LaneId] {
+  const [a, b] = pair.split("-") as [LaneId, LaneId];
+  return [a, b];
+}
 
 /** The settings that a share link holds. Nothing else goes into the link. */
 export interface ViewSettings {
@@ -21,6 +41,10 @@ export interface ViewSettings {
   span: Span;
   lanes: LaneId[];
   koorma: KoormaMode;
+  view: TimelineView;
+  pairs: CyclePair[];
+  /** The world event whose card is open, or null. */
+  eventId: string | null;
 }
 
 /** DESIGN.md: desktop shows 5 lanes, phones the first 3. */
@@ -55,6 +79,9 @@ export function defaultView(nowMs: number = Date.now()): ViewSettings {
     span: spanAround(instantMs, DEFAULT_SPAN_MS),
     lanes: [...DEFAULT_LANES],
     koorma: "global",
+    view: "lanes",
+    pairs: ["jupiter-saturn"],
+    eventId: null,
   };
 }
 
@@ -78,7 +105,12 @@ export function parseUrlInstant(text: string | null): number | null {
   return ms;
 }
 
-/** The hash of a share link, for example "#d=2020-12-21&from=2014-12-21&to=2026-12-21&lanes=sa,ju&koorma=global". */
+const EVENT_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+/**
+ * The hash of a share link, for example
+ * "#d=2020-12-21&from=2014-12-21&to=2026-12-21&lanes=sa,ju&koorma=global&view=lanes&pairs=jupiter-saturn".
+ */
 export function serializeView(view: ViewSettings): string {
   const params = new URLSearchParams();
   params.set("d", formatUrlInstant(view.instantMs));
@@ -86,6 +118,9 @@ export function serializeView(view: ViewSettings): string {
   params.set("to", formatUrlInstant(view.span.endMs));
   params.set("lanes", view.lanes.map((lane) => LANE_CODES[lane]).join(","));
   params.set("koorma", view.koorma);
+  params.set("view", view.view);
+  params.set("pairs", view.pairs.join(","));
+  if (view.eventId) params.set("event", view.eventId);
   // Keep the commas readable.
   return `#${params.toString().replaceAll("%2C", ",")}`;
 }
@@ -120,10 +155,22 @@ export function parseView(hash: string, fallback: ViewSettings): ViewSettings {
   const koorma: KoormaMode =
     koormaParam === "global" || koormaParam === "classical" ? koormaParam : fallback.koorma;
 
+  const viewParam = params.get("view");
+  const view: TimelineView = viewParam === "lanes" || viewParam === "cycles" ? viewParam : fallback.view;
+
+  const pairCodes = (params.get("pairs") ?? "").split(",");
+  const pairs = CYCLE_PAIRS.filter((pair) => pairCodes.includes(pair)).slice(0, MAX_CYCLE_PAIRS);
+
+  const eventParam = params.get("event");
+  const eventId = eventParam && EVENT_ID.test(eventParam) ? eventParam : params.has("d") ? null : fallback.eventId;
+
   return {
     instantMs,
     span,
     lanes: lanes.length > 0 ? lanes : [...fallback.lanes],
     koorma,
+    view,
+    pairs: pairs.length > 0 ? pairs : [...fallback.pairs],
+    eventId,
   };
 }

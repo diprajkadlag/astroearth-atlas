@@ -59,11 +59,16 @@ describe("share link", () => {
     span: { startMs: Date.UTC(2014, 11, 21), endMs: Date.UTC(2026, 11, 21) },
     lanes: ["saturn", "jupiter", "rahu"],
     koorma: "classical",
+    view: "cycles",
+    pairs: ["jupiter-saturn", "saturn-rahu"],
+    eventId: null,
   };
 
   it("survives a round trip", () => {
     const hash = serializeView(view);
-    expect(hash).toBe("#d=2020-12-21&from=2014-12-21&to=2026-12-21&lanes=sa,ju,ra&koorma=classical");
+    expect(hash).toBe(
+      "#d=2020-12-21&from=2014-12-21&to=2026-12-21&lanes=sa,ju,ra&koorma=classical&view=cycles&pairs=jupiter-saturn,saturn-rahu",
+    );
     expect(parseView(hash, defaultView(Date.UTC(2026, 9, 9)))).toEqual(view);
   });
 
@@ -92,6 +97,14 @@ describe("share link", () => {
     expect(parsed.span.endMs).toBeGreaterThan(parsed.instantMs);
   });
 
+  it("keeps an open event and drops unknown pairs", () => {
+    const fallback = defaultView(Date.UTC(2026, 9, 9));
+    const parsed = parseView("#d=2020-03-11&event=covid-pandemic-2020&pairs=pluto-mars,mars-saturn", fallback);
+    expect(parsed.eventId).toBe("covid-pandemic-2020");
+    expect(parsed.pairs).toEqual(["mars-saturn"]);
+    expect(parseView("#d=2020-03-11&event=Bad%20Id", fallback).eventId).toBeNull();
+  });
+
   it("opens on today at 00:00 UTC by default", () => {
     const view = defaultView(Date.UTC(2026, 9, 9, 15, 42));
     expect(view.instantMs).toBe(Date.UTC(2026, 9, 9));
@@ -107,6 +120,9 @@ describe("store", () => {
       span: spanAround(DEC_21_2020, 2 * YEAR),
       lanes: ["saturn", "jupiter", "rahu", "mars", "sun"],
       koorma: "global",
+      view: "lanes",
+      pairs: ["jupiter-saturn"],
+      eventId: null,
     });
   }
 
@@ -137,6 +153,35 @@ describe("store", () => {
     expect(currentStepMs(atlas.getState())).toBe(10 * DAY_MS);
     atlas.getState().setPlaying(false);
     expect(atlas.getState().instantMs % DAY_MS).toBe(0);
+  });
+
+  it("jumps to an event's own time and keeps the zoom", () => {
+    const atlas = store();
+    const length = atlas.getState().span.endMs - atlas.getState().span.startMs;
+    const landing = Date.UTC(1969, 6, 20, 20, 17);
+    atlas.getState().jumpTo(landing, { exact: true, eventId: "apollo-11-1969" });
+    const state = atlas.getState();
+    expect(state.instantMs).toBe(landing);
+    expect(state.exact).toBe(true);
+    expect(state.eventId).toBe("apollo-11-1969");
+    expect(state.span.endMs - state.span.startMs).toBeCloseTo(length, -3);
+    expect((state.span.startMs + state.span.endMs) / 2).toBeCloseTo(landing, -3);
+    // The Earth shows the true time of day after a jump (DESIGN.md, Earth motion).
+    expect(currentStepMs(state)).toBeLessThan(DAY_MS);
+    // Scrubbing ends the exact mode.
+    atlas.getState().stepInstant(1);
+    expect(atlas.getState().exact).toBe(false);
+  });
+
+  it("follows the clock in live mode", () => {
+    const atlas = store();
+    atlas.getState().setLive(true);
+    expect(atlas.getState().live).toBe(true);
+    atlas.getState().tickLive(Date.UTC(2026, 9, 10, 9, 30, 15));
+    expect(atlas.getState().instantMs).toBe(Date.UTC(2026, 9, 10, 9, 30, 15));
+    expect(currentStepMs(atlas.getState())).toBe(1000);
+    atlas.getState().setInstant(DEC_21_2020);
+    expect(atlas.getState().live).toBe(false);
   });
 
   it("stops at the last date", () => {

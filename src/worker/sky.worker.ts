@@ -1,5 +1,6 @@
 import { DailyTable, type DailyTableManifest } from "../engine/dailyTable.ts";
 import type { WorkerRequest, WorkerResponse } from "./protocol.ts";
+import { sampleCycles } from "./sampleCycles.ts";
 import { sampleSeries } from "./sampleSeries.ts";
 
 /**
@@ -37,7 +38,7 @@ scope.addEventListener("message", (event) => {
   void tableReady.then((table) => {
     let response: WorkerResponse;
     try {
-      response = sampleSeries(request, table);
+      response = request.type === "cycles" ? sampleCycles(request, table) : sampleSeries(request, table);
     } catch (error) {
       response = {
         type: "error",
@@ -46,7 +47,7 @@ scope.addEventListener("message", (event) => {
       };
     }
     const transfer =
-      response.type === "samples" ? response.series.map((series) => series.packed.buffer) : [];
+      response.type === "error" ? [] : response.series.map((series) => series.packed.buffer);
     scope.postMessage(response, transfer);
   });
 });
