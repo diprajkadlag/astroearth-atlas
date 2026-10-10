@@ -41,7 +41,8 @@
     "data": "node --no-warnings scripts/generate-sky-data.ts",
     "data:check": "node --no-warnings scripts/generate-sky-data.ts --check",
     "horizons": "node --no-warnings scripts/fetch-horizons-reference.ts",
-    "textures": "node --no-warnings scripts/make-earth-textures.ts"
+    "textures": "node --no-warnings scripts/make-earth-textures.ts",
+    "release-check": "node scripts/check-release.mjs"
   },
   "dependencies": {
     "@react-three/fiber": "9.8.1",
@@ -65,6 +66,7 @@
     "eslint-plugin-react-hooks": "7.1.1",
     "eslint-plugin-react-refresh": "0.5.7",
     "globals": "17.13.0",
+    "marked": "18.0.14",
     "sharp": "0.35.5",
     "tailwindcss": "4.3.3",
     "typescript": "6.0.3",

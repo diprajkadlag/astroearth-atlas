@@ -11,6 +11,18 @@ export const en = {
   creditsEarth:
     "Earth images: NASA Earth Observatory (Blue Marble Next Generation, and Black Marble 2016).",
 
+  // Document pages (scripts/doc-pages.ts) and the links to them
+  pagesNav: "About this site",
+  pageAbout: "About",
+  pageMethod: "Method",
+  pagePrivacy: "Privacy",
+  pageImpressum: "Impressum",
+  pageCredits: "Credits",
+  pageBack: "Back to the atlas",
+  pageTable: "Table, scrolls sideways on narrow screens",
+  pageTitle: "{page}: {app}",
+  koormaMethodLink: "How the Koorma Chakra is drawn",
+
   // Header
   ayanamsa: "Lahiri ayanamsa {value}",
   timeOfDay: "Time {time}",

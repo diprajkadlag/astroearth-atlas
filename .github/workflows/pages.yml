@@ -54,6 +54,11 @@ jobs:
           BASE_PATH: /${{ github.event.repository.name }}/
         run: npm run build
 
+      - name: Refuse to publish unfinished legal pages
+        # The Impressum and the privacy page hold [TODO] markers until the
+        # owner fills in their details (scripts/check-release.mjs).
+        run: npm run release-check
+
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:

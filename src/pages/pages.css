@@ -1,0 +1,169 @@
+@import "../index.css";
+
+/*
+ * The document pages: About, Method, Privacy, Impressum and Credits
+ * (scripts/doc-pages.ts renders them from Markdown at build time). Same
+ * tokens as the app (DESIGN.md): plain panels, hairlines, no cards.
+ */
+
+.page-header,
+.doc,
+.page-footer {
+  box-sizing: border-box;
+  max-width: 48rem;
+  margin: 0 auto;
+  padding-inline: 16px;
+}
+
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding-block: 24px 8px;
+}
+
+.page-home {
+  color: var(--color-ivory);
+  font-family: var(--font-display);
+  font-size: var(--text-title-1);
+  line-height: var(--text-title-1--line-height);
+  text-decoration: none;
+}
+
+.page-header ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-small);
+}
+
+.page-header a {
+  display: inline-block;
+  padding-block: 12px;
+}
+
+.page-header a[aria-current="page"] {
+  color: var(--color-ivory);
+  text-decoration: none;
+}
+
+.doc {
+  padding-block: 8px 32px;
+  border-top: 1px solid var(--color-rule);
+}
+
+/* A link inside running text needs more than its colour (WCAG 1.4.1). */
+.doc a,
+.page-footer a {
+  text-decoration-line: underline;
+}
+
+.doc h1,
+.doc h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+
+.doc h1 {
+  margin: 24px 0 12px;
+  font-size: var(--text-title-1);
+  line-height: var(--text-title-1--line-height);
+}
+
+.doc h2 {
+  margin: 32px 0 8px;
+  font-size: var(--text-title-2);
+  line-height: var(--text-title-2--line-height);
+}
+
+.doc h3 {
+  margin: 24px 0 8px;
+  font-size: var(--text-title-3);
+  line-height: var(--text-title-3--line-height);
+  font-weight: 600;
+}
+
+.doc p,
+.doc ul,
+.doc ol {
+  margin: 0 0 12px;
+  max-width: 72ch;
+}
+
+.doc ul,
+.doc ol {
+  padding-left: 1.25rem;
+}
+
+.doc li + li {
+  margin-top: 4px;
+}
+
+.doc code {
+  padding: 1px 4px;
+  border-radius: var(--radius-control);
+  background: var(--color-raised);
+  font-size: 0.95em;
+}
+
+.doc pre {
+  overflow-x: auto;
+  padding: 8px 12px;
+  background: var(--color-raised);
+}
+
+.doc pre code {
+  padding: 0;
+  background: none;
+}
+
+/* Wide tables scroll inside their region, so the page never scrolls sideways. */
+.doc .table-scroll {
+  overflow-x: auto;
+  margin: 0 0 16px;
+}
+
+.doc table {
+  margin: 0;
+  border-collapse: collapse;
+  font-size: var(--text-small);
+  line-height: var(--text-small--line-height);
+}
+
+.doc th,
+.doc td {
+  padding: 6px 12px 6px 0;
+  border-bottom: 1px solid var(--color-rule);
+  text-align: left;
+  vertical-align: top;
+}
+
+.doc th {
+  border-bottom-color: var(--color-rule-strong);
+  font-weight: 600;
+}
+
+.doc blockquote {
+  margin: 0 0 12px;
+  padding-left: 12px;
+  border-left: 2px solid var(--color-rule-strong);
+  color: var(--color-muted);
+}
+
+.page-footer {
+  padding-block: 16px 32px;
+  border-top: 1px solid var(--color-rule);
+  color: var(--color-muted);
+  font-size: var(--text-small);
+  line-height: var(--text-small--line-height);
+}
+
+.page-footer p {
+  margin: 0 0 8px;
+  max-width: 72ch;
+}

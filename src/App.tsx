@@ -13,6 +13,15 @@ import { TimelineSection } from "./timeline/TimelineSection.tsx";
 // three.js and the scene load in their own chunk (plan, performance budgets).
 const SceneView = lazy(() => import("./scene/SceneView.tsx").then((module) => ({ default: module.SceneView })));
 
+/** The document pages (scripts/doc-pages.ts), linked from the footer. */
+const PAGES = [
+  ["about", "pageAbout"],
+  ["method", "pageMethod"],
+  ["privacy", "pagePrivacy"],
+  ["impressum", "pageImpressum"],
+  ["credits", "pageCredits"],
+] as const;
+
 /** Holds the scene's place while its chunk loads, so the page does not jump. */
 function ScenePlaceholder({ className }: { className: string }) {
   return (
@@ -56,6 +65,17 @@ export function App() {
       <footer className="text-muted mt-auto px-4 pt-8 pb-6 text-small sm:px-8">
         <p className="max-w-prose">{t("disclaimer")}</p>
         <p className="mt-1 max-w-prose">{t("creditsEarth")}</p>
+        <nav aria-label={t("pagesNav")} className="mt-2">
+          <ul className="flex flex-wrap gap-x-5">
+            {PAGES.map(([file, key]) => (
+              <li key={file}>
+                <a href={`pages/${file}.html`} className="inline-flex min-h-11 items-center sm:min-h-8">
+                  {t(key)}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </footer>
     </div>
   );

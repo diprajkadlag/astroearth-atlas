@@ -1,9 +1,12 @@
 import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import type { Plugin } from "vite";
 import { defineConfig } from "vitest/config";
+
+import { docPages, pageInputs } from "./scripts/doc-pages.ts";
 
 /**
  * The built page may load files only from its own origin: no CDN, no web
@@ -71,7 +74,7 @@ function thirdPartyNotices(): Plugin {
 export default defineConfig({
   // GitHub Pages serves a project site under /<repository>/.
   base: process.env.BASE_PATH ?? "/",
-  plugins: [react(), tailwindcss(), contentSecurityPolicy(), thirdPartyNotices()],
+  plugins: [react(), tailwindcss(), contentSecurityPolicy(), thirdPartyNotices(), docPages()],
   // Port 4747 is reserved for this app. A service worker of another local
   // app on a shared port would otherwise answer for it.
   server: { port: 4747, strictPort: true },
@@ -81,6 +84,8 @@ export default defineConfig({
     // whole library). It loads after the page, so it does not delay the
     // first view. Other chunks stay far below this limit.
     chunkSizeWarningLimit: 1000,
+    // The app and the document pages (scripts/doc-pages.ts).
+    rollupOptions: { input: pageInputs(fileURLToPath(new URL(".", import.meta.url))) },
   },
   test: {
     include: ["src/**/*.test.{ts,tsx}", "tests/**/*.test.ts"],

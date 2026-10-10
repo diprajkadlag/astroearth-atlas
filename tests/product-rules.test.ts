@@ -20,11 +20,15 @@ describe("product rules (CLAUDE.md)", () => {
   it("rule 6: names the inspiring speaker only in the README credit line, never in the app", () => {
     // Built from parts, so this test file does not contain the name itself.
     const name = ["Abhigya", "Anand"];
+    // The document pages render docs/METHOD.md and the table of CREDITS.md too.
     const files = [
       ...textFiles(join(ROOT, "src")),
       ...textFiles(join(ROOT, "public")),
+      ...textFiles(join(ROOT, "pages")),
       join(ROOT, "index.html"),
       join(ROOT, "package.json"),
+      join(ROOT, "docs", "METHOD.md"),
+      join(ROOT, "CREDITS.md"),
     ];
     const hits = files.filter((file) => {
       const text = readFileSync(file, "utf8");
@@ -34,8 +38,10 @@ describe("product rules (CLAUDE.md)", () => {
   });
 
   it("rule 2: loads nothing from other origins in the page source", () => {
-    const html = readFileSync(join(ROOT, "index.html"), "utf8");
-    expect(html).not.toMatch(/<(script|link)[^>]+(src|href)="https?:\/\//i);
+    for (const file of [join(ROOT, "index.html"), ...textFiles(join(ROOT, "pages"))]) {
+      const html = readFileSync(file, "utf8");
+      expect(html, file).not.toMatch(/<(script|link)[^>]+(src|href)="https?:\/\//i);
+    }
     for (const file of textFiles(join(ROOT, "src")).filter((path) => path.endsWith(".css"))) {
       expect(readFileSync(file, "utf8"), file).not.toMatch(/url\(\s*["']?https?:\/\//i);
     }

@@ -113,6 +113,9 @@ export function KoormaPanel({ className = "" }: { className?: string }) {
         ))}
       </ul>
       <p className="text-muted mt-2 text-small">{t("koormaPointHint")}</p>
+      <p className="mt-1 text-small">
+        <a href="pages/method.html#koorma-chakra">{t("koormaMethodLink")}</a>
+      </p>
     </section>
   );
 }
