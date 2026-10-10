@@ -1,6 +1,6 @@
 # Design rules
 
-Medini Atlas uses the **Yantra** direction: the app is an observatory
+AstroEarth Atlas uses the **Yantra** direction: the app is an observatory
 instrument for reading the sky against time. The user chose it on 2026-10-09
 from 3 directions on a private design canvas (Yantra, Panchang and Akasha).
 Fable reviewed the canvas and recommended Yantra.

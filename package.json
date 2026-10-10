@@ -1,8 +1,8 @@
 {
-  "name": "medini-atlas",
+  "name": "astroearth-atlas",
   "version": "0.0.0",
   "private": true,
-  "description": "Medini Atlas: an interactive 3D Earth and planetary time waves for Vedic mundane astrology (Lahiri sidereal zodiac), 1900 to 2050.",
+  "description": "AstroEarth Atlas: an interactive 3D Earth and planetary time waves for Vedic mundane astrology (Lahiri sidereal zodiac), 1900 to 2050.",
   "keywords": [
     "jyotish",
     "vedic-astrology",
@@ -14,13 +14,13 @@
   ],
   "license": "MIT",
   "author": "Dipraj Kadlag",
-  "homepage": "https://github.com/diprajkadlag/medini-atlas#readme",
+  "homepage": "https://github.com/diprajkadlag/astroearth-atlas#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/diprajkadlag/medini-atlas.git"
+    "url": "git+https://github.com/diprajkadlag/astroearth-atlas.git"
   },
   "bugs": {
-    "url": "https://github.com/diprajkadlag/medini-atlas/issues"
+    "url": "https://github.com/diprajkadlag/astroearth-atlas/issues"
   },
   "type": "module",
   "engines": {

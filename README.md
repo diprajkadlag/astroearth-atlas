@@ -1,4 +1,4 @@
-# Medini Atlas
+# AstroEarth Atlas
 
 An interactive 3D Earth and planetary time waves for Vedic mundane astrology
 (Medini Jyotisha). It shows the sidereal sky (Lahiri) from 1900 to 2050 beside
@@ -10,7 +10,7 @@ globe.
 
 ## What it is, and what it is not
 
-Medini Atlas shows calculated sky positions and traditional Jyotish rules. It
+AstroEarth Atlas shows calculated sky positions and traditional Jyotish rules. It
 does not predict events. It is not financial, medical, legal or safety advice.
 
 The site makes no request to any other server: fonts, textures and data ship
@@ -46,7 +46,7 @@ and how it was checked, including a comparison with NASA JPL Horizons.
 ## Credits
 
 - Inspired in part by public talks on mundane astrology, including talks by
-  Abhigya Anand. Medini Atlas is an independent hobby project. It is not
+  Abhigya Anand. AstroEarth Atlas is an independent hobby project. It is not
   affiliated with, sponsored, endorsed or reviewed by Abhigya Anand. All data,
   calculations and interpretations are the author's own.
 - Textures, fonts and data: see [CREDITS.md](CREDITS.md).

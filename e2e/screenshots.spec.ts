@@ -7,7 +7,7 @@ import { test, type Page } from "@playwright/test";
  */
 
 type DebugWindow = Window & {
-  __MEDINI_DEBUG__?: {
+  __ASTROEARTH_DEBUG__?: {
     frames: number;
     mapsWidth: number;
     projectGeo(latitudeDeg: number, longitudeDeg: number): { x: number; y: number; facing: boolean };
@@ -18,7 +18,7 @@ type DebugWindow = Window & {
 async function waitForScene(page: Page): Promise<void> {
   await page.waitForFunction(
     () => {
-      const debug = (window as DebugWindow).__MEDINI_DEBUG__;
+      const debug = (window as DebugWindow).__ASTROEARTH_DEBUG__;
       return Boolean(debug && debug.frames > 0 && debug.mapsWidth >= 2048);
     },
     undefined,
@@ -43,7 +43,7 @@ test("capture the classical Koorma mode, with the tooltip of a lit region", asyn
   await scene.scrollIntoViewIfNeeded();
   if (!isMobile) {
     // Karachi lies in the west wedge, lit by the solar eclipse of 14 December 2020.
-    const point = await page.evaluate(() => (window as DebugWindow).__MEDINI_DEBUG__?.projectGeo(24.86, 67.01));
+    const point = await page.evaluate(() => (window as DebugWindow).__ASTROEARTH_DEBUG__?.projectGeo(24.86, 67.01));
     const box = await scene.boundingBox();
     if (point && box) await page.mouse.move(box.x + point.x, box.y + point.y);
     await page.waitForTimeout(200);

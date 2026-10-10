@@ -28,7 +28,7 @@ const CONTENT_SECURITY_POLICY = [
 
 function contentSecurityPolicy(): Plugin {
   return {
-    name: "medini-atlas:content-security-policy",
+    name: "astroearth-atlas:content-security-policy",
     apply: "build",
     transformIndexHtml() {
       return [
@@ -53,7 +53,7 @@ function contentSecurityPolicy(): Plugin {
  */
 function thirdPartyNotices(): Plugin {
   return {
-    name: "medini-atlas:third-party-notices",
+    name: "astroearth-atlas:third-party-notices",
     apply: "build",
     generateBundle() {
       this.emitFile({

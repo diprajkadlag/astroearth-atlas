@@ -84,7 +84,7 @@ const MARKER_RADIUS: Readonly<Record<GrahaId, number>> = {
 };
 
 /** Read by the browser tests (CLAUDE.md: scene tests read positions, never pixels). */
-export interface MediniDebug {
+export interface AtlasDebug {
   frames: number;
   instantMs: number;
   earthInstantMs: number;
@@ -111,7 +111,7 @@ export interface MediniDebug {
 
 declare global {
   interface Window {
-    __MEDINI_DEBUG__?: MediniDebug;
+    __ASTROEARTH_DEBUG__?: AtlasDebug;
   }
 }
 
@@ -847,7 +847,7 @@ export function SkyScene({ overlayRef, apiRef, interactive }: SkySceneProps) {
           return;
         }
         applyEarthMaps(objects.earthMaterial, day, night, anisotropy);
-        const debug = window.__MEDINI_DEBUG__;
+        const debug = window.__ASTROEARTH_DEBUG__;
         if (debug) debug.mapsWidth = width;
         invalidate();
       }
@@ -864,7 +864,7 @@ export function SkyScene({ overlayRef, apiRef, interactive }: SkySceneProps) {
 
   // Debug hook for the browser tests.
   useEffect(() => {
-    const debug: MediniDebug = {
+    const debug: AtlasDebug = {
       frames: 0,
       instantMs: Number.NaN,
       earthInstantMs: Number.NaN,
@@ -892,12 +892,12 @@ export function SkyScene({ overlayRef, apiRef, interactive }: SkySceneProps) {
         return { x: screen.x, y: screen.y, facing };
       },
     };
-    window.__MEDINI_DEBUG__ = debug;
+    window.__ASTROEARTH_DEBUG__ = debug;
     // The frame loop fills the Koorma state on its next frame.
     lastRef.current = { ...lastRef.current, mode: null };
     invalidate();
     return () => {
-      if (window.__MEDINI_DEBUG__ === debug) delete window.__MEDINI_DEBUG__;
+      if (window.__ASTROEARTH_DEBUG__ === debug) delete window.__ASTROEARTH_DEBUG__;
     };
   }, [camera, gl, invalidate, objects]);
 
@@ -993,7 +993,7 @@ export function SkyScene({ overlayRef, apiRef, interactive }: SkySceneProps) {
     if (instantChanged || sky !== previous.sky || atlas.koorma !== previous.mode) {
       const glow = readKoormaGlow(atlas.instantMs, sky);
       litRef.current = updateKoorma(objects, glow, atlas.koorma);
-      const debugHook = window.__MEDINI_DEBUG__;
+      const debugHook = window.__ASTROEARTH_DEBUG__;
       if (debugHook) {
         debugHook.koorma = {
           mode: atlas.koorma,
@@ -1027,7 +1027,7 @@ export function SkyScene({ overlayRef, apiRef, interactive }: SkySceneProps) {
       );
     }
 
-    const debug = window.__MEDINI_DEBUG__;
+    const debug = window.__ASTROEARTH_DEBUG__;
     if (debug) {
       debug.frames += 1;
       debug.instantMs = atlas.instantMs;

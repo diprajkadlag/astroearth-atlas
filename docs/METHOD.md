@@ -1,9 +1,9 @@
 # Method
 
-This page states every convention that Medini Atlas uses, and how each one
+This page states every convention that AstroEarth Atlas uses, and how each one
 was checked. It grows with the app: a section appears when its feature ships.
 
-Medini Atlas shows calculated sky positions and traditional Jyotish rules. It
+AstroEarth Atlas shows calculated sky positions and traditional Jyotish rules. It
 does not predict events, and nothing here claims that astrology predicts
 events.
 

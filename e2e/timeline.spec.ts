@@ -50,7 +50,7 @@ test.describe("timeline", () => {
     // DESIGN.md, Earth motion: a jump to an event shows the event's own time.
     await expect
       .poll(() =>
-        page.evaluate(() => (window as Window & { __MEDINI_DEBUG__?: { earthInstantMs: number } }).__MEDINI_DEBUG__?.earthInstantMs),
+        page.evaluate(() => (window as Window & { __ASTROEARTH_DEBUG__?: { earthInstantMs: number } }).__ASTROEARTH_DEBUG__?.earthInstantMs),
       )
       .toBe(Date.UTC(2020, 11, 21, 18, 26));
     await page.getByRole("button", { name: "Previous event" }).click();

@@ -12,7 +12,7 @@ type KoormaDebug = {
 };
 
 const koorma = (page: Page) =>
-  page.evaluate(() => (window as Window & { __MEDINI_DEBUG__?: KoormaDebug }).__MEDINI_DEBUG__?.koorma ?? null);
+  page.evaluate(() => (window as Window & { __ASTROEARTH_DEBUG__?: KoormaDebug }).__ASTROEARTH_DEBUG__?.koorma ?? null);
 
 test.describe("Koorma Chakra", () => {
   test("lights the west on the globe and in the legend after the eclipse of 14 December 2020", async ({ page, isMobile }) => {
@@ -44,7 +44,7 @@ test.describe("Koorma Chakra", () => {
     await page.getByRole("button", { name: /Turn on touch control/ }).click();
     const box = await scene.boundingBox();
     if (!box) throw new Error("The scene has no box.");
-    const karachi = await page.evaluate(() => (window as Window & { __MEDINI_DEBUG__?: KoormaDebug }).__MEDINI_DEBUG__?.projectGeo(24.86, 67.01));
+    const karachi = await page.evaluate(() => (window as Window & { __ASTROEARTH_DEBUG__?: KoormaDebug }).__ASTROEARTH_DEBUG__?.projectGeo(24.86, 67.01));
     expect(karachi?.facing).toBe(true);
     await page.touchscreen.tap(box.x + (karachi?.x ?? 0), box.y + (karachi?.y ?? 0));
     await expect(page.getByTestId("koorma-tooltip")).toContainText("West: Jyeshtha, Mula, Purva Ashadha");
@@ -69,7 +69,7 @@ test.describe("Koorma Chakra", () => {
     const box = await scene.boundingBox();
     if (!box) throw new Error("The scene has no box.");
     // Karachi: west of Mathura, inside the classical chakra.
-    const karachi = await page.evaluate(() => (window as Window & { __MEDINI_DEBUG__?: KoormaDebug }).__MEDINI_DEBUG__?.projectGeo(24.86, 67.01));
+    const karachi = await page.evaluate(() => (window as Window & { __ASTROEARTH_DEBUG__?: KoormaDebug }).__ASTROEARTH_DEBUG__?.projectGeo(24.86, 67.01));
     expect(karachi?.facing).toBe(true);
     await page.mouse.move(box.x + (karachi?.x ?? 0), box.y + (karachi?.y ?? 0));
     const tooltip = page.getByTestId("koorma-tooltip");
@@ -77,7 +77,7 @@ test.describe("Koorma Chakra", () => {
     await expect(tooltip).toContainText("Solar eclipse in Jyeshtha");
     // A place on the visible globe far from India lies outside the classical chakra.
     const far = await page.evaluate(() => {
-      const debug = (window as Window & { __MEDINI_DEBUG__?: KoormaDebug }).__MEDINI_DEBUG__;
+      const debug = (window as Window & { __ASTROEARTH_DEBUG__?: KoormaDebug }).__ASTROEARTH_DEBUG__;
       const candidates: [number, number][] = [[-30, 25], [40, 140], [-25, 135], [5, 20], [60, 60]];
       return candidates.map(([lat, lon]) => debug?.projectGeo(lat, lon)).find((point) => point?.facing) ?? null;
     });

@@ -1,4 +1,4 @@
-# Medini Atlas: project rules
+# AstroEarth Atlas: project rules
 
 The approved plan is in
 `C:\Users\dipra\.claude\plans\so-we-will-develop-graceful-sedgewick.md`

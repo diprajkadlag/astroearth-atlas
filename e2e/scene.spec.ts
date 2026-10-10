@@ -19,12 +19,12 @@ interface DebugHook {
   markerLongitude(id: string): number;
 }
 
-type DebugWindow = Window & { __MEDINI_DEBUG__?: DebugHook };
+type DebugWindow = Window & { __ASTROEARTH_DEBUG__?: DebugHook };
 
 async function sceneReady(page: Page, instantMs?: number): Promise<void> {
   await page.waitForFunction(
     (expected) => {
-      const debug = (window as DebugWindow).__MEDINI_DEBUG__;
+      const debug = (window as DebugWindow).__ASTROEARTH_DEBUG__;
       if (!debug || debug.frames < 1) return false;
       return expected === undefined || debug.instantMs === expected;
     },
@@ -34,7 +34,7 @@ async function sceneReady(page: Page, instantMs?: number): Promise<void> {
 }
 
 async function subSolar(page: Page) {
-  return page.evaluate(() => (window as DebugWindow).__MEDINI_DEBUG__!.subSolarFromScene());
+  return page.evaluate(() => (window as DebugWindow).__ASTROEARTH_DEBUG__!.subSolarFromScene());
 }
 
 function expectNear(actual: number, expected: number, tolerance: number, label: string) {
@@ -47,7 +47,7 @@ test.describe("scene orientation", () => {
     await page.goto("/#d=2020-12-21&from=2014-12-21&to=2026-12-21");
     await sceneReady(page, instant);
 
-    const up = await page.evaluate(() => (window as DebugWindow).__MEDINI_DEBUG__!.cameraUp);
+    const up = await page.evaluate(() => (window as DebugWindow).__ASTROEARTH_DEBUG__!.cameraUp);
     expect(up).toEqual([0, 0, 1]);
 
     const fromScene = await subSolar(page);
@@ -62,7 +62,7 @@ test.describe("scene orientation", () => {
     await page.goto("/#d=2020-12-21T18:26Z&from=2020-12-19&to=2020-12-23");
     await sceneReady(page, instant);
 
-    const earthInstant = await page.evaluate(() => (window as DebugWindow).__MEDINI_DEBUG__!.earthInstantMs);
+    const earthInstant = await page.evaluate(() => (window as DebugWindow).__ASTROEARTH_DEBUG__!.earthInstantMs);
     expect(earthInstant).toBe(instant);
     const fromScene = await subSolar(page);
     const fromEngine = subPlanetPoint("sun", new Date(instant));
@@ -75,7 +75,7 @@ test.describe("scene orientation", () => {
     await page.goto("/#d=2020-12-21&from=2014-12-21&to=2026-12-21");
     await sceneReady(page, instant);
     for (const id of ["sun", "moon", "jupiter", "saturn", "rahu", "ketu"] as const) {
-      const marker = await page.evaluate((graha) => (window as DebugWindow).__MEDINI_DEBUG__!.markerLongitude(graha), id);
+      const marker = await page.evaluate((graha) => (window as DebugWindow).__ASTROEARTH_DEBUG__!.markerLongitude(graha), id);
       const engine = siderealLongitude(id, new Date(instant));
       expectNear(Math.abs(signedAngularDelta(marker, engine)), 0, 0.01, id);
     }
@@ -91,7 +91,7 @@ test.describe("one date drives everything", () => {
     await expect(ruler).toHaveAttribute("aria-valuetext", "21 December 2020");
     const cursor = page.getByTestId("lanes-cursor");
     const cursorBefore = await cursor.evaluate((element) => element.style.transform);
-    const moonBefore = await page.evaluate(() => (window as DebugWindow).__MEDINI_DEBUG__!.markerLongitude("moon"));
+    const moonBefore = await page.evaluate(() => (window as DebugWindow).__ASTROEARTH_DEBUG__!.markerLongitude("moon"));
 
     // A 4-year span steps by 1 day.
     await ruler.focus();
@@ -101,7 +101,7 @@ test.describe("one date drives everything", () => {
 
     await expect(page.getByTestId("current-date")).toHaveText("22 December 2020");
     await expect.poll(() => cursor.evaluate((element) => element.style.transform)).not.toBe(cursorBefore);
-    const moonAfter = await page.evaluate(() => (window as DebugWindow).__MEDINI_DEBUG__!.markerLongitude("moon"));
+    const moonAfter = await page.evaluate(() => (window as DebugWindow).__ASTROEARTH_DEBUG__!.markerLongitude("moon"));
     // The Moon moves about 13 degrees a day.
     expect(Math.abs(signedAngularDelta(moonBefore, moonAfter))).toBeGreaterThan(10);
     await expect(page.locator('[data-graha="moon"]')).toContainText(/°/);

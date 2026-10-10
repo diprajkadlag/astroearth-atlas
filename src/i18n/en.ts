@@ -4,10 +4,10 @@
  * Placeholders in braces, for example {date}, are filled by t().
  */
 export const en = {
-  appName: "Medini Atlas",
+  appName: "AstroEarth Atlas",
   tagline: "The sidereal sky beside world history, from 1900 to 2050.",
   disclaimer:
-    "Medini Atlas shows calculated sky positions and traditional Jyotish rules. It does not predict events, and it is not advice of any kind.",
+    "AstroEarth Atlas shows calculated sky positions and traditional Jyotish rules. It does not predict events, and it is not advice of any kind.",
   creditsEarth:
     "Earth images: NASA Earth Observatory (Blue Marble Next Generation, and Black Marble 2016).",
 

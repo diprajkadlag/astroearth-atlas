@@ -12,9 +12,9 @@ test.describe("app shell", () => {
     const foreign = recordForeignRequests(page, appOrigin);
 
     await page.goto("/");
-    await expect(page).toHaveTitle("Medini Atlas");
+    await expect(page).toHaveTitle("AstroEarth Atlas");
     await expect(
-      page.getByRole("heading", { level: 1, name: "Medini Atlas" }),
+      page.getByRole("heading", { level: 1, name: "AstroEarth Atlas" }),
     ).toBeVisible();
     await expect(page.getByText("It does not predict events")).toBeVisible();
     await page.waitForLoadState("networkidle");
