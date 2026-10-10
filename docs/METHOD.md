@@ -134,6 +134,87 @@ their sidereal longitudes. The value is +1 at a conjunction, 0 at a square and
 -1 at an opposition. The cosine has no wrap at 360°, so each pair is one
 unbroken line. The same angle holds in the tropical zodiac.
 
+## Koorma Chakra
+
+- **Source.** Brihat Samhita, chapter 14 ("On Kūrma Vibhāga"), in the
+  translation of N. Chidambaram Iyer (1884, public domain). Stanza 1 divides
+  the lands into 9 divisions of 3 nakshatras each, beginning with Krittika:
+  the centre of Bharatavarsha, then round through the east, the south-east,
+  the south and so on. The app shows these traditional rules. It does not
+  claim that they hold.
+- **Divisions.** Names of lands are a selection from Iyer's lists. They are
+  spelt as the app spells the nakshatras (sh, ch, ri), without diacritics. The
+  stanzas give the full lists.
+
+  | Division | Nakshatras | Stanzas | Some of the lands that the text names |
+  |---|---|---|---|
+  | Centre (Madhyadesha) | Krittika, Rohini, Mrigashira | 2–4 | Matsya, Mathuraka (Mathura), Shurasena, Panchala, Saketa, Kura, Gajahvaya, the lands along the Yamuna and the Sarasvati |
+  | East | Ardra, Punarvasu, Pushya | 5–7 | Magadha, Mithila, Samatata, Paundra, Utkala, Kashi, Tamralipta, Lauhitya |
+  | South-east | Ashlesha, Magha, Purva Phalguni | 8–10 | Kosala, Kalinga, Vanga, Upavanga, Vidarbha, Andhra, Chedika, the Vindhya lands |
+  | South | Uttara Phalguni, Hasta, Chitra | 11–16 | Lanka (Ceylon), Malaya, Bharukaccha, Konkana, Avanti, Kerala, Karnata, Chola, Kanchi, the Kaveri |
+  | South-west | Swati, Vishakha, Anuradha | 17–19 | Pahlava, Kamboja, Sindhu, Sauvira, Anarta, Yavana, Saurashtra, Dravida |
+  | West | Jyeshtha, Mula, Purva Ashadha | 20–21 | Aparantaka, Haihaya, Panchanada (Punjab), Parata, Shaka, the western Mleccha lands |
+  | North-west | Uttara Ashadha, Shravana, Dhanishtha | 22–23 | Tushara, Madra, Ashmaka, Kuluta, Strirajya |
+  | North | Shatabhisha, Purva Bhadrapada, Uttara Bhadrapada | 24–28 | Kailasa, the Himalayas, Uttara Kuru, Kaikaya, Trigarta, Takshashila, Gandhara, Malava |
+  | North-east | Revati, Ashwini, Bharani | 29–31 | Kira, Kashmira, Abhisara, Darada, Kirata, China, Kauninda |
+
+- **Centre.** The app centres the chakra on Mathura (27.49° N, 77.67° E),
+  which stanza 2 names in the central division. The centre region is a circle
+  of 5.5° (about 610 km) around it (DESIGN.md).
+- **Classical mode.** The 8 directions are wedges of 45° around the centre, by
+  great-circle bearing, over the land within 25° of Mathura (about 2,800 km):
+  the subcontinent and its rim. The wedges approximate the text. The text's
+  lists do not follow a compass: they put Kashmira in the north-east,
+  Panchanada in the west, and Gandhara and Takshashila in the north. Ujjain
+  (Avanti, south) and Lahore lie inside the centre circle.
+- **Global mode (modern extension).** No classical text carries the chakra
+  over the whole Earth. Global mode does this for the half of the Earth within
+  90° of Mathura. It uses rhumb-line bearings, the compass direction of a
+  straight line on a Mercator map, so a place reads in the direction that a
+  map shows. A great circle from India to Alaska starts almost due north, but
+  the rhumb line runs east-north-east. The other half of the Earth is outside
+  the chakra. On the globe, each lit direction fades with the distance from
+  Mathura. Two artefacts of rhumb bearings are faint at that distance: the
+  bearing flips at the meridian opposite Mathura (102.33° W), which crosses
+  the half-Earth north of about 62° N, and near a pole every rhumb line runs
+  north or south.
+- **Modes compared.** The 2 bearing rules differ by up to about 7° at 25° from
+  Mathura. So a place near a wedge boundary can change region between the
+  classical and the global mode.
+- **Glow.** A region glows when one of its 3 nakshatras holds one of these
+  (DESIGN.md, Koorma glow). One graha gives one reason.
+  1. Strongest (eclipse ivory): a solar or lunar eclipse within 7 days of the
+     shown instant, the same window as the eclipse pins. Stanza 5.42 says that
+     an eclipse also affects "those provinces ... which correspond to
+     particular lunar mansions in which the eclipses happen to occur", and
+     points to chapter 14. The nakshatra is that of the eclipsed body: the
+     Sun's for a solar eclipse, the Moon's for a lunar eclipse. Penumbral
+     lunar eclipses do not count, because the Moon only dims slightly.
+  2. Middle (brass): a station of Mars, Mercury, Jupiter, Venus or Saturn
+     within 3 days, at its longitude; or Mars or Saturn retrograde. The text
+     names no stations: this tier is the app's own convention (DESIGN.md).
+  3. Soft (brass at 50 %): Saturn, Mars, Rahu or Ketu in the nakshatra.
+     Stanzas 32–33 say that the rulers of a division suffer when malefic
+     planets are in it. Iyer's note gives the commentator's malefics: Saturn,
+     the Sun, Mars, Rahu and Ketu. The soft glow leaves out the Sun, so that
+     it does not sweep through all 9 regions every year.
+
+  Rahu and Ketu are always in 2 nakshatras, so at least 2 regions glow at
+  every date. Eclipse pins mark every eclipse within 7 days, penumbral ones
+  too: a pin shows a fact, the glow follows the rule. The nakshatra that causes a glow gets an arc in the same colour
+  on the ring. The Koorma panel lists every lit region with its reasons, and
+  the tooltip on the globe gives the same text for the region under the
+  pointer.
+
+## Great conjunctions view
+
+The view lists the 68 conjunctions of Jupiter and Saturn from 1000 to 2100
+(see "Event searches"). A chart shows the element of the sign of each
+conjunction, in the sidereal and the tropical zodiac: one row per element, one
+dot per conjunction. The conjunctions of one retrograde loop (a triple
+conjunction) share one block in the table. Conjunctions inside 1900 to 2050
+can be shown in the sky.
+
 ## World events
 
 - **Selection.** Major events with a clear start date, global events and key

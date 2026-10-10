@@ -25,6 +25,11 @@ function dayId(prefix: string, ms: number): string {
   return `${prefix}-${new Date(ms).toISOString().slice(0, 10)}`;
 }
 
+/** "great-conjunction-2020-12-21": the timeline id of a conjunction of Jupiter and Saturn. */
+export function greatConjunctionId(ms: number): string {
+  return dayId("great-conjunction", ms);
+}
+
 let cache: { events: SkyEvents | null; list: TimelineEvent[] } | null = null;
 
 /** All timeline events, sorted by time. World events show before the sky data loads. */
@@ -49,7 +54,7 @@ export function timelineEvents(sky: SkyEvents | null): TimelineEvent[] {
     }
     for (const conjunction of sky.greatConjunctions) {
       list.push({
-        id: dayId("great-conjunction", conjunction.timeMs),
+        id: greatConjunctionId(conjunction.timeMs),
         kind: "great-conjunction",
         timeMs: conjunction.timeMs,
         exact: true,

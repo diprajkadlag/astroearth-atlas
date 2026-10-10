@@ -46,7 +46,10 @@ export function RulesPanel({ className = "" }: { className?: string }) {
   }, [drishti]);
 
   return (
-    <div className={`min-w-0 ${className}`} data-testid="rules">
+    <section aria-labelledby="rules-title" className={`min-w-0 ${className}`} data-testid="rules">
+      <h2 id="rules-title" className="font-display text-title-2">
+        {t("rulesTitle")}
+      </h2>
       <Section title={t("rulesConjunctions")} count={yuti.length}>
         {yuti.map((pair) => (
           <li key={`${pair.a}-${pair.b}`}>
@@ -98,7 +101,7 @@ export function RulesPanel({ className = "" }: { className?: string }) {
           ))}
         </ul>
       </details>
-    </div>
+    </section>
   );
 }
 

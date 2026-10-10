@@ -2,6 +2,7 @@ import { useMemo, useSyncExternalStore, type ReactNode } from "react";
 
 import { useSkyEvents } from "../data/skyEventsLoader.ts";
 import { neighbourEvent, timelineEvents, type TimelineEvent } from "../data/timelineEvents.ts";
+import { buttonBase, secondaryButton, toggleOn } from "../design/controls.ts";
 import { GRAHA_COLOR_TOKENS, UI_COLORS } from "../design/palette.ts";
 import { t } from "../i18n/index.ts";
 import { clampInstant, startOfUtcDay } from "../state/dates.ts";
@@ -26,9 +27,7 @@ function usePhone(): boolean {
   );
 }
 
-const buttonBase = "min-h-11 rounded-control px-3 text-small font-medium sm:min-h-10 sm:px-4";
-const secondary = `${buttonBase} border border-rule-strong hover:border-ivory disabled:opacity-40 disabled:hover:border-rule-strong`;
-const toggleOn = "border-ivory bg-ivory text-ground";
+const secondary = secondaryButton;
 
 /** A small sample of a legend shape, drawn in SVG. */
 function Swatch({ children }: { children: ReactNode }) {

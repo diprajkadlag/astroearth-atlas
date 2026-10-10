@@ -1,4 +1,4 @@
-import type { GrahaId, PhysicalGrahaId } from "../engine/zodiac.ts";
+import type { Element, GrahaId, PhysicalGrahaId } from "../engine/zodiac.ts";
 
 /**
  * The precomputed sky events (public/data, made by scripts/generate-sky-data.ts):
@@ -41,8 +41,15 @@ export interface KalaSarpaWindow {
 
 export interface GreatConjunction {
   timeMs: number;
+  /** The conjunctions of one retrograde loop (a triple conjunction) share a group. */
+  group: number;
   siderealDeg: number;
   siderealSign: string;
+  siderealElement: Element;
+  tropicalDeg: number;
+  tropicalSign: string;
+  tropicalElement: Element;
+  /** Before 1700 (engine/greatConjunctions.ts). */
   approximate: boolean;
 }
 
@@ -63,7 +70,17 @@ interface RawEvents {
 }
 
 interface RawGreat {
-  conjunctions: { time: string; siderealLongitude: number; siderealSign: string; approximate: boolean }[];
+  conjunctions: {
+    time: string;
+    group: number;
+    siderealLongitude: number;
+    siderealSign: string;
+    siderealElement: Element;
+    tropicalLongitude: number;
+    tropicalSign: string;
+    tropicalElement: Element;
+    approximate: boolean;
+  }[];
 }
 
 /** Parses the generator's minute-precision ISO strings, for example "1900-03-15T13:27Z". */
@@ -110,8 +127,13 @@ export function parseSkyEvents(raw: RawEvents, great: RawGreat): SkyEvents {
     greatConjunctions: byTime(
       great.conjunctions.map((g) => ({
         timeMs: parseEventTime(g.time),
+        group: g.group,
         siderealDeg: g.siderealLongitude,
         siderealSign: g.siderealSign,
+        siderealElement: g.siderealElement,
+        tropicalDeg: g.tropicalLongitude,
+        tropicalSign: g.tropicalSign,
+        tropicalElement: g.tropicalElement,
         approximate: g.approximate,
       })),
     ),

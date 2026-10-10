@@ -2,7 +2,9 @@ import { Suspense, lazy } from "react";
 
 import { t } from "./i18n/index.ts";
 import { EventsPanel } from "./panels/EventsPanel.tsx";
+import { GreatConjunctionsPanel } from "./panels/GreatConjunctionsPanel.tsx";
 import { Header } from "./panels/Header.tsx";
+import { KoormaPanel, KoormaSummary } from "./panels/KoormaPanel.tsx";
 import { LiveSummary, RulesPanel } from "./panels/RulesPanel.tsx";
 import { SkyTable } from "./panels/SkyTable.tsx";
 import { usePlayback, useUrlSync } from "./state/hooks.ts";
@@ -22,9 +24,10 @@ function ScenePlaceholder({ className }: { className: string }) {
 
 /**
  * The page (DESIGN.md, layout). On a phone the order is the scene, the
- * timeline, the sky table with the rules, then the events. From 1024 px the
- * sky table moves beside the scene, the timeline spans the full width below
- * them, and the events and the rules share the last row.
+ * timeline, the sky table, the Koorma Chakra with the rules, the events and
+ * the great conjunctions. From 1024 px the sky table moves beside the scene,
+ * the timeline spans the full width below them, the events share a row with
+ * the Koorma Chakra and the rules, and the great conjunctions span the last row.
  */
 export function App() {
   useUrlSync();
@@ -38,9 +41,16 @@ export function App() {
           <SceneView className="lg:col-start-1 lg:row-start-1" />
         </Suspense>
         <TimelineSection className="lg:col-span-2 lg:row-start-2" />
-        <SkyTable className="lg:col-start-2 lg:row-start-1" />
-        <RulesPanel className="lg:col-start-2 lg:row-start-3" />
+        <div className="min-w-0 lg:col-start-2 lg:row-start-1">
+          <SkyTable />
+          <KoormaSummary className="mt-3 hidden lg:block" />
+        </div>
+        <div className="flex min-w-0 flex-col gap-y-6 lg:col-start-2 lg:row-start-3">
+          <KoormaPanel />
+          <RulesPanel />
+        </div>
         <EventsPanel className="lg:col-start-1 lg:row-start-3" />
+        <GreatConjunctionsPanel className="lg:col-span-2 lg:row-start-4" />
       </main>
       <LiveSummary />
       <footer className="text-muted mt-auto px-4 pt-8 pb-6 text-small sm:px-8">

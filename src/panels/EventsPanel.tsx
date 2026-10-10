@@ -5,11 +5,13 @@ import { useSkyEvents } from "../data/skyEventsLoader.ts";
 import { firstAtOrAfter } from "../data/skyEvents.ts";
 import { findTimelineEvent, nakshatraName, timelineEvents, type TimelineEvent } from "../data/timelineEvents.ts";
 import { EVENT_CATEGORIES, eventDayMs, type EventCategory, type WorldEvent } from "../data/worldEvents.ts";
+import { regionOfNakshatra } from "../engine/koorma.ts";
 import { siderealLongitude } from "../engine/positions.ts";
 import { zodiacPlacement } from "../engine/zodiac.ts";
 import { categoryLabel, eventTitle, kindLabel } from "../i18n/events.ts";
 import { formatDate, formatDateTime, formatDegrees, formatUtcTime } from "../i18n/format.ts";
 import { t } from "../i18n/index.ts";
+import { regionName } from "../i18n/koorma.ts";
 import { useAtlas } from "../state/store.ts";
 
 const MONTH_YEAR = new Intl.DateTimeFormat("en-GB", { timeZone: "UTC", month: "long", year: "numeric" });
@@ -79,6 +81,14 @@ function EventCard({ event, onClose }: { event: TimelineEvent; onClose: () => vo
             {t(event.eclipse.kind === "solar" ? "eclipseSunIn" : "eclipseMoonIn", {
               nakshatra: nakshatraName(event.eclipse.nakshatra),
             })}
+          </p>
+          <p className="text-muted text-small">
+            {t("koormaEclipseRegion", {
+              nakshatra: nakshatraName(event.eclipse.nakshatra),
+              region: regionName(regionOfNakshatra(event.eclipse.nakshatra).id),
+              stanzas: regionOfNakshatra(event.eclipse.nakshatra).stanzas,
+            })}
+            {event.eclipse.type === "penumbral" ? ` ${t("koormaPenumbralNote")}` : ""}
           </p>
           <p className="text-muted text-small">
             {event.eclipse.kind === "lunar"

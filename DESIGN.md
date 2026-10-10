@@ -132,10 +132,13 @@ CREDITS.md). Do not load a font from another origin.
 ## 5. Layout and shape
 
 - Desktop (1024 px and wider): a header with the title and the date. Below it,
-  a grid with the scene (3 fr) and the sky table (2 fr). The timeline spans
-  the full width below the grid.
+  a grid with the scene (3 fr) and the sky table (2 fr), with a 1-line Koorma
+  summary under the table. The timeline spans the full width below the grid.
+  Below the timeline, the events (3 fr) sit beside the Koorma Chakra panel and
+  the rules (2 fr). The great conjunctions span the last row.
 - Phone: the header, the scene (300 px high), a row with Play and the date
-  slider, 3 lanes (150 px), the sky list, and a 1-line disclaimer.
+  slider, 3 lanes (150 px), the sky list, the Koorma Chakra panel, the rules,
+  the events, the great conjunctions, and a 1-line disclaimer.
 - No horizontal scrolling down to 320 px.
 - Spacing steps: 4, 8, 12, 16, 24, 32 and 48 px.
 - Radius: 3 px (`rounded-control`) for buttons and inputs. 0 for panels,
@@ -158,6 +161,13 @@ CREDITS.md). Do not load a font from another origin.
 - The Earth uses NASA Blue Marble (day) and Black Marble (night) images, a
   terminator from the Sun direction and a thin atmosphere rim. No political
   borders. Koorma regions are soft glows, not lines.
+- Koorma glows mix with the map in perceptual space, so a glow on the night
+  side does not flare. In global mode each lit direction is a soft ray from
+  Mathura that fades with distance. Wedge edges fade over about 8 degrees of
+  arc on the ground. Pointing at the globe, or tapping it, opens a tooltip
+  with the region and its reasons. The Koorma panel gives the same text.
+- Below 700 px, a lit nakshatra name takes the point of its arc farthest from
+  the marks there, with a dark outline. It gives way to graha labels.
 - Pins ride on the Earth: an ivory pin with a brass ring for the selected
   event, and eclipse-ivory pins for eclipses within 7 days.
 - A retrograde graha shows the arc of its current loop, from station to

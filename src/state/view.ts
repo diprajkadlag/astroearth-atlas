@@ -1,3 +1,4 @@
+import type { KoormaMode } from "../engine/koorma.ts";
 import type { GrahaId } from "../engine/zodiac.ts";
 import {
   DAY_MS,
@@ -13,7 +14,7 @@ import {
 
 /** A timeline lane. The Rahu lane shows Rahu and Ketu together. */
 export type LaneId = Exclude<GrahaId, "ketu">;
-export type KoormaMode = "global" | "classical";
+export type { KoormaMode };
 /** Lanes: one graha per lane. Cycles: the cosine of the angle between 2 grahas. */
 export type TimelineView = "lanes" | "cycles";
 

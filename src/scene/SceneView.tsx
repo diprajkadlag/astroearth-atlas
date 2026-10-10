@@ -14,6 +14,7 @@ import { UI_COLORS } from "../design/palette.ts";
 import { formatDate } from "../i18n/format.ts";
 import { t } from "../i18n/index.ts";
 import { useAtlas } from "../state/store.ts";
+import { KoormaTooltip } from "./KoormaTooltip.tsx";
 import { SkyScene, type ViewApi } from "./SkyScene.tsx";
 import { probeWebGLCapability, type WebGLCapability } from "./webgl-capability.ts";
 import { getWebGLRecoveryDelay } from "./webgl-recovery.ts";
@@ -220,6 +221,7 @@ export function SceneView({ className = "" }: { className?: string }) {
         )}
 
         <canvas ref={overlayRef} aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full" />
+        {capability.status === "supported" ? <KoormaTooltip /> : null}
 
         <p className="text-muted pointer-events-none absolute right-3 bottom-2 text-caption">{t("notToScale")}</p>
         <p id="scene-help" className="sr-only">

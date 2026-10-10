@@ -4,15 +4,20 @@ import {
   BufferAttribute,
   BufferGeometry,
   CircleGeometry,
+  DoubleSide,
   Group,
   Line,
   LineBasicMaterial,
   LineSegments,
   Mesh,
   MeshBasicMaterial,
+  Raycaster,
+  RingGeometry,
+  Sphere,
   SphereGeometry,
   SRGBColorSpace,
   TextureLoader,
+  Vector2,
   Vector3,
   type Camera,
   type Texture,
@@ -23,15 +28,24 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { between, firstAtOrAfter, type Station } from "../data/skyEvents.ts";
 import { skyEventsNow, useSkyEvents } from "../data/skyEventsLoader.ts";
 import { findTimelineEvent, timelineEvents } from "../data/timelineEvents.ts";
+import {
+  KOORMA_CENTRE,
+  litNakshatras,
+  type GlowStrength,
+  type KoormaMode,
+  type KoormaRegionId,
+  type RegionGlow,
+} from "../engine/koorma.ts";
 import { GRAHA_IDS, NAKSHATRAS, RASIS, type GrahaId } from "../engine/zodiac.ts";
 import { GRAHA_COLOR_TOKENS, UI_COLORS, grahaColor, withAlpha } from "../design/palette.ts";
 import { grahaAbbreviation } from "../i18n/index.ts";
-import { readSky } from "../state/hooks.ts";
+import { readKoormaGlow, readSky } from "../state/hooks.ts";
 import { currentStepMs, useAtlas } from "../state/store.ts";
 import { calculateInstrumentFrameDistance } from "./camera-framing.ts";
-import { createEarthMaterial } from "./earthMaterial.ts";
+import { KOORMA_UNIFORM_ORDER, createEarthMaterial } from "./earthMaterial.ts";
 import {
   apply,
+  bodyToGeo,
   earthInstantMs,
   earthToScene,
   eclipticToScene,
@@ -42,6 +56,7 @@ import {
   type Matrix3,
   type Vec3,
 } from "./frame.ts";
+import { setGlobeHover } from "./hover.ts";
 import { isFarSide, isHiddenByEarth, placeLabels } from "./labels.ts";
 import {
   EARTH_RADIUS,
@@ -52,8 +67,6 @@ import {
   ringTicks,
 } from "./ringGeometry.ts";
 
-/** The Koorma centre (DESIGN.md): the first view faces Mathura. */
-const MATHURA = { latitudeDeg: 27.49, longitudeDeg: 77.67 };
 const CAMERA_ELEVATION_DEG = 32;
 const VERTICAL_FOV_DEG = 36;
 const LABEL_FONT = '500 12px "Anek Devanagari", system-ui, sans-serif';
@@ -82,6 +95,18 @@ export interface MediniDebug {
   subSolarFromScene(): { latitudeDeg: number; longitudeDeg: number };
   /** Sidereal longitude of a graha marker, read from its scene position. */
   markerLongitude(id: GrahaId): number;
+  /**
+   * The Koorma mode, the glow strength (0 to 3) of each region, the lit
+   * nakshatras, and the strength uniform as the shader reads it (KOORMA_UNIFORM_ORDER).
+   */
+  koorma: {
+    mode: KoormaMode;
+    strengths: Partial<Record<KoormaRegionId, number>>;
+    litNakshatras: number[];
+    uniform: number[];
+  };
+  /** Where a place on the Earth shows in the scene box (CSS pixels), and whether it faces the camera. */
+  projectGeo(latitudeDeg: number, longitudeDeg: number): { x: number; y: number; facing: boolean };
 }
 
 declare global {
@@ -150,6 +175,8 @@ interface SceneObjects {
   /** Pins ride on the Earth (children of its mesh): the selected event and eclipses within 7 days. */
   selectedPin: Mesh;
   eclipsePins: Mesh[];
+  /** One arc per nakshatra, just inside the ring, shown while the nakshatra is lit (DESIGN.md, scene). */
+  arcs: Mesh[];
   dispose(): void;
 }
 
@@ -201,6 +228,27 @@ function buildScene(): SceneObjects {
     root.add(marker);
   }
 
+  // Lit nakshatra arcs lie in the ecliptic plane, under the graha marks, so the
+  // Earth hides the far ones. A small gap keeps 2 lit neighbours apart.
+  const arcGap = 0.004;
+  const arcs = Array.from({ length: 27 }, (_, index) => {
+    const arc = new Mesh(
+      new RingGeometry(
+        RING_RADIUS - 0.055,
+        RING_RADIUS - 0.008,
+        24,
+        1,
+        (index * 2 * Math.PI) / 27 + arcGap,
+        (2 * Math.PI) / 27 - 2 * arcGap,
+      ),
+      new MeshBasicMaterial({ color: UI_COLORS.brass, transparent: true, opacity: 0.95, depthWrite: false, side: DoubleSide }),
+    );
+    arc.renderOrder = -5;
+    arc.visible = false;
+    root.add(arc);
+    return arc;
+  });
+
   const axisGeometry = new BufferGeometry();
   axisGeometry.setAttribute("position", new BufferAttribute(new Float32Array(6), 3));
   const axis = new Line(axisGeometry, lineMaterial(GRAHA_COLOR_TOKENS.nodes, 0.9));
@@ -217,6 +265,7 @@ function buildScene(): SceneObjects {
     degreeTicks,
     selectedPin,
     eclipsePins,
+    arcs,
     dispose() {
       root.traverse((object) => {
         if (object instanceof Mesh || object instanceof Line) {
@@ -261,6 +310,26 @@ function updatePins(objects: SceneObjects, instantMs: number, eventId: string | 
     if (eclipse) placePin(pin, eclipse.latitudeDeg, eclipse.longitudeDeg);
     else pin.visible = false;
   });
+}
+
+/** Puts the Koorma glow on the globe and the lit nakshatra arcs on the ring. Returns the lit nakshatras. */
+function updateKoorma(objects: SceneObjects, glow: readonly RegionGlow[], mode: KoormaMode): Map<number, GlowStrength> {
+  const { uniforms } = objects.earthMaterial;
+  KOORMA_UNIFORM_ORDER.forEach((id, index) => {
+    uniforms.koormaStrength.value[index] = glow.find((item) => item.region.id === id)?.strength ?? 0;
+  });
+  uniforms.koormaClassical.value = mode === "classical" ? 1 : 0;
+  const lit = litNakshatras(glow);
+  objects.arcs.forEach((arc, index) => {
+    const strength = lit.get(index) ?? 0;
+    arc.visible = strength > 0;
+    if (strength === 0) return;
+    const material = arc.material as MeshBasicMaterial;
+    // DESIGN.md: eclipse ivory for an eclipse, brass otherwise, brass at 50 % for a transit.
+    material.color.set(strength === 3 ? UI_COLORS.eclipse : UI_COLORS.brass);
+    material.opacity = strength === 1 ? 0.5 : 0.95;
+  });
+  return lit;
 }
 
 /** The current retrograde loop of a graha: the stations before and after the instant. */
@@ -384,7 +453,7 @@ function drawOverlay(
   { canvas, camera, width, height, dpr }: OverlayContext,
   sky: ReturnType<typeof readSky>["sky"],
   markers: Map<GrahaId, Mesh>,
-  extras: { instantMs: number; stations: readonly Station[]; selectedPin: Mesh },
+  extras: { instantMs: number; stations: readonly Station[]; selectedPin: Mesh; lit: ReadonlyMap<number, GlowStrength> },
 ): void {
   const pixelWidth = Math.round(width * dpr);
   const pixelHeight = Math.round(height * dpr);
@@ -490,39 +559,75 @@ function drawOverlay(
 
   // Ring labels give way to the grahas: a name that would touch a graha mark
   // or its label is left out. The sky table still lists every position.
+  // A mark zone knows the nakshatra of its graha and the size of the mark
+  // itself (with the Sun's rays); a label zone has no nakshatra (-1).
   const occupied = visible.flatMap((item, index) => {
     const label = positions[index];
+    const mark = item.graha.id === "sun" ? item.radiusPx * 1.9 : item.radiusPx + 3;
     return label
       ? [
-          { x: item.x, y: item.y, rx: item.radiusPx + 26, ry: item.radiusPx + 9 },
-          { x: label.x, y: label.y, rx: 34, ry: 11 },
+          { x: item.x, y: item.y, rx: item.radiusPx + 26, ry: item.radiusPx + 9, nakshatra: item.graha.nakshatra.index, mark },
+          { x: label.x, y: label.y, rx: 34, ry: 11, nakshatra: -1, mark: 0 },
         ]
       : [];
   });
-  const clashes = (x: number, y: number, halfWidth: number) =>
-    occupied.some((zone) => Math.abs(zone.x - x) < zone.rx + halfWidth - 26 && Math.abs(zone.y - y) < zone.ry);
+  // A lit nakshatra name (ownNakshatra) may stand beside the marks inside that
+  // nakshatra, because the graha that lights it stands there.
+  const clashes = (x: number, y: number, halfWidth: number, ownNakshatra: number) =>
+    occupied.some(
+      (zone) =>
+        (zone.nakshatra === -1 || zone.nakshatra !== ownNakshatra) &&
+        Math.abs(zone.x - x) < zone.rx + halfWidth - 26 &&
+        Math.abs(zone.y - y) < zone.ry,
+    );
   // Ring labels also give way to each other: a name that would touch an earlier one is left out.
   const drawn: { x: number; y: number; halfWidth: number }[] = [];
-  const ringLabel = (text: string, longitudeDeg: number, radius: number) => {
+  /** Draws a ring label unless it is hidden or would touch a mark or another label. Returns true if drawn. */
+  const ringLabel = (text: string, longitudeDeg: number, radius: number, ownNakshatra = -1): boolean => {
     const point = eclipticToScene(longitudeDeg, 0, radius);
-    if (isHiddenByEarth(cameraPosition, point)) return;
+    if (isHiddenByEarth(cameraPosition, point)) return false;
     const { x, y } = project(point, camera, width, height);
     const halfWidth = ctx.measureText(text).width / 2;
-    if (clashes(x, y, halfWidth)) return;
-    if (drawn.some((other) => Math.abs(other.x - x) < other.halfWidth + halfWidth + 4 && Math.abs(other.y - y) < 14)) return;
+    if (clashes(x, y, halfWidth, ownNakshatra)) return false;
+    if (drawn.some((other) => Math.abs(other.x - x) < other.halfWidth + halfWidth + 4 && Math.abs(other.y - y) < 14)) return false;
     drawn.push({ x, y, halfWidth });
+    if (ownNakshatra >= 0) {
+      // A dark outline keeps a lit name readable beside a mark.
+      ctx.strokeStyle = UI_COLORS.dial;
+      ctx.lineWidth = 4;
+      ctx.lineJoin = "round";
+      ctx.strokeText(text, x, y);
+    }
     // Far-side names stay dimmer than near-side ones, but readable (about 5:1 on the dial).
     ctx.fillStyle = isFarSide(cameraPosition, point) ? withAlpha(UI_COLORS.ivory, 0.55) : UI_COLORS.muted;
     ctx.fillText(text, x, y);
+    return true;
   };
-  // DESIGN.md: sign names from 480 px, all nakshatra names from 700 px.
+  // DESIGN.md: sign names from 480 px; all nakshatra names from 700 px, below that only the lit ones.
   if (width >= 480) RASIS.forEach((name, index) => ringLabel(name, index * 30 + 15, SIGN_LABEL_RADIUS));
   // On the ring, the 6 compound names take short forms (P. Phalguni, U. Ashadha); the sky table keeps the full names.
-  if (width >= 700) {
-    NAKSHATRAS.forEach((name, index) =>
-      ringLabel(name.replace(/^Purva /, "P. ").replace(/^Uttara /, "U. "), (index + 0.5) * (360 / 27), NAKSHATRA_LABEL_RADIUS),
-    );
-  }
+  NAKSHATRAS.forEach((name, index) => {
+    const short = name.replace(/^Purva /, "P. ").replace(/^Uttara /, "U. ");
+    if (width >= 700) {
+      ringLabel(short, (index + 0.5) * (360 / 27), NAKSHATRA_LABEL_RADIUS);
+      return;
+    }
+    // Narrow screens: a lit name takes the point of its own arc that lies
+    // farthest from the marks there, if no other label is in the way.
+    if (!extras.lit.has(index)) return;
+    const own = occupied.filter((zone) => zone.nakshatra === index);
+    const candidates = [0.5, 0.25, 0.75, 0.12, 0.88]
+      .map((fraction) => {
+        const longitudeDeg = (index + fraction) * (360 / 27);
+        const { x, y } = project(eclipticToScene(longitudeDeg, 0, NAKSHATRA_LABEL_RADIUS), camera, width, height);
+        const gap = own.length > 0 ? Math.min(...own.map((zone) => Math.hypot(zone.x - x, zone.y - y))) : Number.POSITIVE_INFINITY;
+        return { longitudeDeg, gap };
+      })
+      .sort((a, b) => b.gap - a.gap);
+    for (const candidate of candidates) {
+      if (ringLabel(short, candidate.longitudeDeg, NAKSHATRA_LABEL_RADIUS, index)) break;
+    }
+  });
 
   visible.forEach((item, index) => {
     const position = positions[index];
@@ -590,12 +695,14 @@ export function SkyScene({ overlayRef, apiRef, interactive }: SkySceneProps) {
 
   const controlsRef = useRef<OrbitControls | null>(null);
   const userZoomedRef = useRef(false);
-  const lastRef = useRef<{ instantMs: number; earthMs: number; eventId: string | null; sky: unknown }>({
+  const lastRef = useRef<{ instantMs: number; earthMs: number; eventId: string | null; sky: unknown; mode: KoormaMode | null }>({
     instantMs: Number.NaN,
     earthMs: Number.NaN,
     eventId: null,
     sky: undefined,
+    mode: null,
   });
+  const litRef = useRef<Map<number, GlowStrength>>(new Map());
   const introRef = useRef<number | null>(null);
 
   // The sky events load after the page; draw again when they arrive (pins, trails).
@@ -631,7 +738,8 @@ export function SkyScene({ overlayRef, apiRef, interactive }: SkySceneProps) {
   useLayoutEffect(() => {
     const { instantMs } = useAtlas.getState();
     const earthMs = earthInstantMs(instantMs, currentStepMs(useAtlas.getState()));
-    const mathura = apply(earthToScene(new Date(earthMs)), geoToBody(MATHURA.latitudeDeg, MATHURA.longitudeDeg));
+    // DESIGN.md: the first view faces the Koorma centre at Mathura.
+    const mathura = apply(earthToScene(new Date(earthMs)), geoToBody(KOORMA_CENTRE.latitudeDeg, KOORMA_CENTRE.longitudeDeg));
     const azimuth = Math.atan2(mathura[1], mathura[0]);
     const elevation = (CAMERA_ELEVATION_DEG * Math.PI) / 180;
     camera.up.set(0, 0, 1);
@@ -774,12 +882,76 @@ export function SkyScene({ overlayRef, apiRef, interactive }: SkySceneProps) {
         if (!marker) throw new Error(`The scene has no marker for ${id}.`);
         return sceneToEcliptic([marker.position.x, marker.position.y, marker.position.z]).longitudeDeg;
       },
+      koorma: { mode: useAtlas.getState().koorma, strengths: {}, litNakshatras: [], uniform: [] },
+      projectGeo(latitudeDeg, longitudeDeg) {
+        const point = apply(rowsFromMatrix(objects.earth), geoToBody(latitudeDeg, longitudeDeg));
+        const box = gl.domElement.getBoundingClientRect();
+        const screen = project(point, camera, box.width, box.height);
+        const toCamera: Vec3 = [camera.position.x - point[0], camera.position.y - point[1], camera.position.z - point[2]];
+        const facing = point[0] * toCamera[0] + point[1] * toCamera[1] + point[2] * toCamera[2] > 0;
+        return { x: screen.x, y: screen.y, facing };
+      },
     };
     window.__MEDINI_DEBUG__ = debug;
+    // The frame loop fills the Koorma state on its next frame.
+    lastRef.current = { ...lastRef.current, mode: null };
+    invalidate();
     return () => {
       if (window.__MEDINI_DEBUG__ === debug) delete window.__MEDINI_DEBUG__;
     };
-  }, [camera, objects]);
+  }, [camera, gl, invalidate, objects]);
+
+  // The place under the pointer, for the Koorma tooltip: a mouse hover, or a tap on a touch screen.
+  useEffect(() => {
+    const element = gl.domElement;
+    const raycaster = new Raycaster();
+    const globe = new Sphere(new Vector3(), EARTH_RADIUS);
+    const hit = new Vector3();
+    const pointer = new Vector2();
+    let downX = 0;
+    let downY = 0;
+    const locate = (event: PointerEvent) => {
+      const box = element.getBoundingClientRect();
+      const x = event.clientX - box.left;
+      const y = event.clientY - box.top;
+      pointer.set((x / box.width) * 2 - 1, 1 - (y / box.height) * 2);
+      raycaster.setFromCamera(pointer, camera);
+      if (!raycaster.ray.intersectSphere(globe, hit)) return null;
+      const body = apply(transpose(rowsFromMatrix(objects.earth)), [hit.x, hit.y, hit.z]);
+      return { x, y, width: box.width, height: box.height, ...bodyToGeo(body) };
+    };
+    // A mouse or a pen can hover; a finger taps. Browsers send pointerleave right
+    // after a touch ends, so only a hovering pointer clears the box when it leaves.
+    const hovering = (event: PointerEvent) => event.pointerType !== "touch";
+    const move = (event: PointerEvent) => {
+      if (hovering(event) && event.buttons === 0) setGlobeHover(locate(event));
+    };
+    const leave = (event: PointerEvent) => {
+      if (hovering(event)) setGlobeHover(null);
+    };
+    const down = (event: PointerEvent) => {
+      downX = event.clientX;
+      downY = event.clientY;
+      // A drag must not leave a stale box behind.
+      setGlobeHover(null);
+    };
+    const up = (event: PointerEvent) => {
+      // A tap, not a drag: show the place under the finger or the pen.
+      if (event.pointerType === "mouse" || Math.hypot(event.clientX - downX, event.clientY - downY) > 8) return;
+      setGlobeHover(locate(event));
+    };
+    element.addEventListener("pointermove", move);
+    element.addEventListener("pointerleave", leave);
+    element.addEventListener("pointerdown", down);
+    element.addEventListener("pointerup", up);
+    return () => {
+      element.removeEventListener("pointermove", move);
+      element.removeEventListener("pointerleave", leave);
+      element.removeEventListener("pointerdown", down);
+      element.removeEventListener("pointerup", up);
+      setGlobeHover(null);
+    };
+  }, [camera, gl, objects]);
 
   useFrame(() => {
     const atlas = useAtlas.getState();
@@ -818,7 +990,20 @@ export function SkyScene({ overlayRef, apiRef, interactive }: SkySceneProps) {
     if (instantChanged || atlas.eventId !== previous.eventId || sky !== previous.sky) {
       updatePins(objects, atlas.instantMs, atlas.eventId);
     }
-    lastRef.current = { instantMs: atlas.instantMs, earthMs, eventId: atlas.eventId, sky };
+    if (instantChanged || sky !== previous.sky || atlas.koorma !== previous.mode) {
+      const glow = readKoormaGlow(atlas.instantMs, sky);
+      litRef.current = updateKoorma(objects, glow, atlas.koorma);
+      const debugHook = window.__MEDINI_DEBUG__;
+      if (debugHook) {
+        debugHook.koorma = {
+          mode: atlas.koorma,
+          strengths: Object.fromEntries(glow.map((item) => [item.region.id, item.strength])),
+          litNakshatras: [...litRef.current.keys()].sort((a, b) => a - b),
+          uniform: Array.from(objects.earthMaterial.uniforms.koormaStrength.value),
+        };
+      }
+    }
+    lastRef.current = { instantMs: atlas.instantMs, earthMs, eventId: atlas.eventId, sky, mode: atlas.koorma };
 
     // First-load animation: the degree ticks draw in, the camera settles.
     if (introRef.current !== null) {
@@ -838,7 +1023,7 @@ export function SkyScene({ overlayRef, apiRef, interactive }: SkySceneProps) {
         { canvas, camera, width: size.width, height: size.height, dpr: gl.getPixelRatio() },
         reading.sky,
         objects.markers,
-        { instantMs: atlas.instantMs, stations: sky?.stations ?? [], selectedPin: objects.selectedPin },
+        { instantMs: atlas.instantMs, stations: sky?.stations ?? [], selectedPin: objects.selectedPin, lit: litRef.current },
       );
     }
 

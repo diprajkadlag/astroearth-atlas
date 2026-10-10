@@ -1,5 +1,8 @@
 import { useEffect, useMemo } from "react";
 
+import { between, type SkyEvents } from "../data/skyEvents.ts";
+import { useSkyEvents } from "../data/skyEventsLoader.ts";
+import { ECLIPSE_GLOW_WINDOW_MS, STATION_GLOW_WINDOW_MS, koormaGlow, type RegionGlow } from "../engine/koorma.ts";
 import { kalaSarpa, type KalaSarpaState } from "../engine/rules.ts";
 import { skyAt, type SkySnapshot } from "../engine/positions.ts";
 import { tithiFromLongitudes, type Tithi } from "../engine/tithi.ts";
@@ -97,4 +100,29 @@ export function readSky(instantMs: number): SkyReading {
 export function useSky(): SkyReading {
   const instantMs = useAtlas((state) => state.instantMs);
   return useMemo(() => readSky(instantMs), [instantMs]);
+}
+
+let glowCache: { instantMs: number; events: SkyEvents | null; glow: RegionGlow[] } | null = null;
+
+/**
+ * The Koorma glow at one instant (engine/koorma.ts). The globe, the legend and
+ * the tooltip share one calculation. Before the sky events load, only the
+ * transits and retrograde motion count.
+ */
+export function readKoormaGlow(instantMs: number, events: SkyEvents | null): RegionGlow[] {
+  if (glowCache?.instantMs === instantMs && glowCache.events === events) return glowCache.glow;
+  const glow = koormaGlow({
+    instantMs,
+    grahas: readSky(instantMs).sky.grahas,
+    eclipses: events ? between(events.eclipses, instantMs - ECLIPSE_GLOW_WINDOW_MS, instantMs + ECLIPSE_GLOW_WINDOW_MS) : [],
+    stations: events ? between(events.stations, instantMs - STATION_GLOW_WINDOW_MS, instantMs + STATION_GLOW_WINDOW_MS) : [],
+  });
+  glowCache = { instantMs, events, glow };
+  return glow;
+}
+
+export function useKoormaGlow(): RegionGlow[] {
+  const instantMs = useAtlas((state) => state.instantMs);
+  const events = useSkyEvents();
+  return useMemo(() => readKoormaGlow(instantMs, events), [instantMs, events]);
 }
