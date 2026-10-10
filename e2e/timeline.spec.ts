@@ -195,6 +195,25 @@ test.describe("world events and controls", () => {
     await expect.poll(() => page.evaluate(() => window.location.hash)).not.toContain("from=2014-12-21");
   });
 
+  test("Shift with the mouse wheel pans the lanes and keeps the zoom", async ({ page, isMobile }) => {
+    test.skip(isMobile, "Phones have no mouse wheel.");
+    await page.goto("/#d=2020-12-21&from=2014-12-21&to=2026-12-21");
+    const lanes = page.getByRole("img", { name: /Sidereal longitude of/ });
+    await lanes.scrollIntoViewIfNeeded();
+    const box = await lanes.boundingBox();
+    if (!box) throw new Error("The lanes have no box.");
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.keyboard.down("Shift");
+    await page.mouse.wheel(0, 120);
+    await page.keyboard.up("Shift");
+    await expect.poll(() => hash(page)).not.toContain("from=2014-12-21");
+    // One wheel step pans by a tenth of the 12-year span, later in time.
+    const fromYear = Number(/from=(\d{4})/.exec(await hash(page))?.[1]);
+    const toYear = Number(/to=(\d{4})/.exec(await hash(page))?.[1]);
+    expect(fromYear).toBe(2016);
+    expect(toYear - fromYear).toBe(12);
+  });
+
   test("touch devices start with the 3D view locked", async ({ page, isMobile }) => {
     await page.goto("/#d=2020-12-21");
     const unlock = page.getByRole("button", { name: /Turn on touch control/ });

@@ -15,8 +15,8 @@ const BANNED = /\bpredict|\bforecast|\bastrolog|\bomens?\b|\bforetold\b|caused b
 const SHARED_ITEMS = new Set(["Q81068910"]);
 
 describe("world events", () => {
-  it("hold the curated list of about 60 events", () => {
-    expect(WORLD_EVENTS.length).toBeGreaterThanOrEqual(50);
+  it("hold the curated list of about 90 events", () => {
+    expect(WORLD_EVENTS.length).toBeGreaterThanOrEqual(80);
   });
 
   it("have unique kebab-case ids that end in the start year", () => {
@@ -77,6 +77,16 @@ describe("world events", () => {
         expect(Math.abs(event.place.latitudeDeg), event.id).toBeLessThanOrEqual(90);
         expect(Math.abs(event.place.longitudeDeg), event.id).toBeLessThanOrEqual(180);
       }
+    }
+  });
+
+  it("give no place to a war fought over a wide area (METHOD.md)", () => {
+    // A pin in a disputed region would be the only map statement of a borderless globe.
+    const wars = ["ww1-start-1914", "ww2-start-1939", "korean-war-1950", "indo-pak-war-1947", "indo-pak-war-1965", "indo-pak-war-1971"];
+    for (const id of wars) {
+      const event = WORLD_EVENTS.find((item) => item.id === id);
+      expect(event, id).toBeDefined();
+      expect(event?.place, id).toBeUndefined();
     }
   });
 

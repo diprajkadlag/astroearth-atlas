@@ -140,10 +140,19 @@ unbroken line. The same angle holds in the tropical zodiac.
   events of India. No event is added or removed because of the sky at its
   date. Every title and summary is written in own words. The app stores facts
   and the Wikidata item of each event (CC0), never Wikipedia text.
+- **Start date.** An event needs a start date known at least to the month.
+  So the Bengal famine of 1943 is not listed: Wikidata (Q522837) gives the
+  year only.
+- **Wars, attacks and disputes.** Titles and summaries say what happened and
+  when, in neutral words, and give no blame where the facts are disputed. A
+  war fought over a wide area has no place, so the globe shows no pin for it.
 - **Time rule.** An event with a stated time uses that UTC time. An event
   known to the day uses 12:00 local mean time at its place (4 minutes per
   degree of longitude east of Greenwich), or 12:00 UTC without a place. An
-  event known to the month uses 12:00 UTC on the 1st.
+  event known to the month uses 12:00 UTC on the 1st. When the local date of
+  an event differs from its UTC date, the list stores the day, so the card
+  shows the local date. For example, the Latur earthquake struck at 22:25 UTC
+  on 29 September 1993, which was 30 September in India.
 - **Moon range.** A day-precision event card shows where the Moon stood at
   the start and the end of that local day, because the Moon moves about 13°
   in a day.
@@ -153,7 +162,9 @@ unbroken line. The same angle holds in the tropical zodiac.
   eclipse, such as the one of 2023-04-20, shows as total.
 - **Sources.** Each date, place and Wikidata item was checked on 2026-10-10.
   Where Wikidata gives no day, the card links the official page that does
-  (WHO, CERN, the South African government).
+  (WHO, CERN, the South African government, the Embassy of India in
+  Washington for Pokhran-II, and the IMD journal MAUSAM for the Odisha
+  cyclone of 1999).
 
 ## Sky moments
 
