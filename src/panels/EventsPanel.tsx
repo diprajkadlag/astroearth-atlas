@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 
 import { SKY_MOMENTS } from "../data/presets.ts";
 import { useSkyEvents } from "../data/skyEventsLoader.ts";
+import { firstAtOrAfter } from "../data/skyEvents.ts";
 import { findTimelineEvent, nakshatraName, timelineEvents, type TimelineEvent } from "../data/timelineEvents.ts";
 import { EVENT_CATEGORIES, eventDayMs, type EventCategory, type WorldEvent } from "../data/worldEvents.ts";
 import { siderealLongitude } from "../engine/positions.ts";
@@ -98,10 +99,17 @@ function EventCard({ event, onClose }: { event: TimelineEvent; onClose: () => vo
       ) : null}
       {moonRange ? <p className="text-muted mt-3 max-w-prose text-small">{moonRange}</p> : null}
       {world ? (
-        <p className="mt-3 text-small">
-          <a href={`https://www.wikidata.org/wiki/${world.wikidata}`} target="_blank" rel="noopener noreferrer">
-            {t("eventSource", { id: world.wikidata })}
-          </a>
+        <p className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-small">
+          {world.wikidata ? (
+            <a href={`https://www.wikidata.org/wiki/${world.wikidata}`} target="_blank" rel="noopener noreferrer">
+              {t("eventSource", { id: world.wikidata })}
+            </a>
+          ) : null}
+          {world.source ? (
+            <a href={world.source} target="_blank" rel="noopener noreferrer">
+              {t("eventOfficialSource", { site: new URL(world.source).hostname })}
+            </a>
+          ) : null}
         </p>
       ) : (
         <p className="text-muted mt-3 text-small">{t("eventCalculated")}</p>
@@ -118,6 +126,10 @@ export function EventsPanel({ className = "" }: { className?: string }) {
   const sky = useSkyEvents();
   const events = useMemo(() => timelineEvents(sky), [sky]);
   const selected = findTimelineEvent(events, eventId);
+  const instantMs = useAtlas((state) => state.instantMs);
+  // With no card open, the 4 events around the date fill its place.
+  const index = firstAtOrAfter(events, instantMs);
+  const nearby = events.slice(Math.max(0, index - 2), index + 2);
   const [category, setCategory] = useState<EventCategory | "all">("all");
   const world = events.filter((event) => event.world && (category === "all" || event.world.category === category));
 
@@ -127,7 +139,24 @@ export function EventsPanel({ className = "" }: { className?: string }) {
         {selected ? (
           <EventCard event={selected} onClose={() => selectEvent(null)} />
         ) : (
-          <p className="text-muted border-t border-rule pt-3 text-small">{t("eventNone")}</p>
+          <div className="border-t border-rule pt-3">
+            <h3 className="text-small font-semibold">{t("nearbyTitle")}</h3>
+            <ul className="mt-1">
+              {nearby.map((event) => (
+                <li key={event.id} className="border-b border-rule">
+                  <button
+                    type="button"
+                    onClick={() => jumpTo(event.timeMs, { exact: true, eventId: event.id })}
+                    className="grid min-h-11 w-full grid-cols-[minmax(0,1fr)_auto] items-baseline gap-3 py-1.5 text-left text-small hover:bg-raised"
+                  >
+                    <span>{eventTitle(event)}</span>
+                    <span className="text-muted tabular-nums">{formatDate(event.timeMs)}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <p className="text-muted mt-2 text-small">{t("eventNone")}</p>
+          </div>
         )}
       </div>
       <div className="min-w-0">

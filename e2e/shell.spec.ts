@@ -48,3 +48,13 @@ test.describe("app shell", () => {
     expect(blocking).toEqual([]);
   });
 });
+
+test("has no serious accessibility violations in the Cycles view with a card open", async ({ page }) => {
+  await page.goto("/#d=2020-12-14T16:13Z&view=cycles&event=solar-eclipse-2020-12-14");
+  await expect(page.getByTestId("event-card")).toBeVisible();
+  const results = await new AxeBuilder({ page }).analyze();
+  const blocking = results.violations
+    .filter((violation) => violation.impact === "serious" || violation.impact === "critical")
+    .map((violation) => `${violation.id}: ${violation.help}`);
+  expect(blocking).toEqual([]);
+});

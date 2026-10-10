@@ -4,14 +4,12 @@ import {
   BufferAttribute,
   BufferGeometry,
   CircleGeometry,
-  DirectionalLight,
   Group,
   Line,
   LineBasicMaterial,
   LineSegments,
   Mesh,
   MeshBasicMaterial,
-  MeshLambertMaterial,
   SphereGeometry,
   SRGBColorSpace,
   TextureLoader,
@@ -147,7 +145,6 @@ interface SceneObjects {
   earthMaterial: ReturnType<typeof createEarthMaterial>;
   markers: Map<GrahaId, Mesh>;
   axis: Line;
-  sunLight: DirectionalLight;
   /** The degree ticks draw in during the first-load animation. */
   degreeTicks: LineSegments;
   /** Pins ride on the Earth (children of its mesh): the selected event and eclipses within 7 days. */
@@ -196,11 +193,8 @@ function buildScene(): SceneObjects {
 
   const markers = new Map<GrahaId, Mesh>();
   for (const id of GRAHA_IDS) {
-    const material =
-      id === "moon"
-        ? // The Moon is lit by the Sun, so its phase shows.
-          new MeshLambertMaterial({ color: GRAHA_COLOR_TOKENS.moon, emissive: GRAHA_COLOR_TOKENS.moon, emissiveIntensity: 0.12 })
-        : new MeshBasicMaterial({ color: grahaColor(id) });
+    // The Moon's phase is drawn on the label layer, from the true elongation.
+    const material = new MeshBasicMaterial({ color: grahaColor(id) });
     const marker = new Mesh(new SphereGeometry(MARKER_RADIUS[id], 32, 16), material);
     marker.name = id;
     markers.set(id, marker);
@@ -212,8 +206,6 @@ function buildScene(): SceneObjects {
   const axis = new Line(axisGeometry, lineMaterial(GRAHA_COLOR_TOKENS.nodes, 0.9));
   root.add(axis);
 
-  const sunLight = new DirectionalLight("#ffffff", Math.PI);
-  root.add(sunLight);
 
   return {
     root,
@@ -222,7 +214,6 @@ function buildScene(): SceneObjects {
     earthMaterial,
     markers,
     axis,
-    sunLight,
     degreeTicks,
     selectedPin,
     eclipsePins,
@@ -304,6 +295,49 @@ function stepIntro(objects: SceneObjects, progress: number): boolean {
   const ticks = Math.min(1, progress / 0.7);
   objects.degreeTicks.geometry.setDrawRange(0, progress >= 1 ? Infinity : Math.floor(total * ticks));
   return progress < 1;
+}
+
+/** Angle between 2 longitudes, 0 to 180 degrees. */
+function elongation(aDeg: number, bDeg: number): number {
+  const delta = Math.abs(((aDeg - bDeg) % 360 + 360) % 360);
+  return delta > 180 ? 360 - delta : delta;
+}
+
+/**
+ * The Moon's phase as seen from the Earth: the lit fraction follows the
+ * elongation from the Sun (0 degrees new, 180 degrees full), and the lit limb
+ * faces the Sun's mark on screen. Drawn over the Moon mark, with a ring in the
+ * Moon's colour for identity.
+ */
+function drawMoonPhase(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  radius: number,
+  elongationDeg: number,
+  towardSunRad: number,
+): void {
+  const terminator = Math.cos((elongationDeg * Math.PI) / 180) * radius;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(towardSunRad);
+  ctx.fillStyle = UI_COLORS.dial;
+  ctx.beginPath();
+  ctx.arc(0, 0, radius, 0, Math.PI * 2);
+  ctx.fill();
+  // The lit half faces the Sun (+x). The terminator is an ellipse that cuts it
+  // to a crescent (elongation under 90 degrees) or widens it to a gibbous Moon.
+  ctx.fillStyle = UI_COLORS.ivory;
+  ctx.beginPath();
+  ctx.arc(0, 0, radius, -Math.PI / 2, Math.PI / 2, false);
+  ctx.ellipse(0, 0, Math.abs(terminator), radius, 0, Math.PI / 2, -Math.PI / 2, terminator > 0);
+  ctx.fill();
+  ctx.strokeStyle = GRAHA_COLOR_TOKENS.moon;
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.arc(0, 0, radius + 1, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
 }
 
 /** The dial plate shrinks to the framed ring on narrow screens, so the canvas never cuts it. */
@@ -467,17 +501,28 @@ function drawOverlay(
   });
   const clashes = (x: number, y: number, halfWidth: number) =>
     occupied.some((zone) => Math.abs(zone.x - x) < zone.rx + halfWidth - 26 && Math.abs(zone.y - y) < zone.ry);
+  // Ring labels also give way to each other: a name that would touch an earlier one is left out.
+  const drawn: { x: number; y: number; halfWidth: number }[] = [];
   const ringLabel = (text: string, longitudeDeg: number, radius: number) => {
     const point = eclipticToScene(longitudeDeg, 0, radius);
     if (isHiddenByEarth(cameraPosition, point)) return;
     const { x, y } = project(point, camera, width, height);
-    if (clashes(x, y, ctx.measureText(text).width / 2)) return;
-    ctx.fillStyle = isFarSide(cameraPosition, point) ? withAlpha(UI_COLORS.ivory, 0.3) : UI_COLORS.muted;
+    const halfWidth = ctx.measureText(text).width / 2;
+    if (clashes(x, y, halfWidth)) return;
+    if (drawn.some((other) => Math.abs(other.x - x) < other.halfWidth + halfWidth + 4 && Math.abs(other.y - y) < 14)) return;
+    drawn.push({ x, y, halfWidth });
+    // Far-side names stay dimmer than near-side ones, but readable (about 5:1 on the dial).
+    ctx.fillStyle = isFarSide(cameraPosition, point) ? withAlpha(UI_COLORS.ivory, 0.55) : UI_COLORS.muted;
     ctx.fillText(text, x, y);
   };
   // DESIGN.md: sign names from 480 px, all nakshatra names from 700 px.
   if (width >= 480) RASIS.forEach((name, index) => ringLabel(name, index * 30 + 15, SIGN_LABEL_RADIUS));
-  if (width >= 700) NAKSHATRAS.forEach((name, index) => ringLabel(name, (index + 0.5) * (360 / 27), NAKSHATRA_LABEL_RADIUS));
+  // On the ring, the 6 compound names take short forms (P. Phalguni, U. Ashadha); the sky table keeps the full names.
+  if (width >= 700) {
+    NAKSHATRAS.forEach((name, index) =>
+      ringLabel(name.replace(/^Purva /, "P. ").replace(/^Uttara /, "U. "), (index + 0.5) * (360 / 27), NAKSHATRA_LABEL_RADIUS),
+    );
+  }
 
   visible.forEach((item, index) => {
     const position = positions[index];
@@ -500,6 +545,15 @@ function drawOverlay(
       ctx.beginPath();
       ctx.arc(item.x, item.y, item.radiusPx + 3, 0, Math.PI * 2);
       ctx.stroke();
+    }
+    if (item.graha.id === "moon") {
+      const sunMarker = markers.get("sun");
+      const sun = sky.grahas.find((graha) => graha.id === "sun");
+      if (sunMarker && sun) {
+        const sunScreen = project([sunMarker.position.x, sunMarker.position.y, sunMarker.position.z], camera, width, height);
+        const towardSun = Math.atan2(sunScreen.y - item.y, sunScreen.x - item.x);
+        drawMoonPhase(ctx, item.x, item.y, Math.max(5, item.radiusPx + 1), elongation(sun.siderealLongitudeDeg, item.graha.siderealLongitudeDeg), towardSun);
+      }
     }
     // A label that had to move away from its mark gets a thin leader line.
     const gap = Math.hypot(position.x - item.x, position.y - item.y);
@@ -746,7 +800,6 @@ export function SkyScene({ overlayRef, apiRef, interactive }: SkySceneProps) {
           const sunScene = eclipticToScene(graha.siderealLongitudeDeg, graha.eclipticLatitudeDeg);
           const sunBody = apply(transpose(earthMatrix), sunScene);
           objects.earthMaterial.uniforms.sunDirection.value.set(sunBody[0], sunBody[1], sunBody[2]).normalize();
-          objects.sunLight.position.set(sunScene[0] * 10, sunScene[1] * 10, sunScene[2] * 10);
         }
       }
 

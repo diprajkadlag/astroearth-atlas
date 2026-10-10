@@ -66,8 +66,11 @@ export function LanesView({ height }: { height: number }) {
     const { xOf } = timeScale(layout, span);
     const rule = withAlpha(UI_COLORS.ivory, RULE_ALPHA.rule);
     const band = withAlpha(UI_COLORS.ivory, 0.035);
-    const stations = sky ? between(sky.stations, span.startMs, span.endMs) : [];
-    const conjunctions = sky ? between(sky.conjunctions, span.startMs, span.endMs) : [];
+    // Stations and conjunction dots need room: below about 40 px a year they would pile up.
+    const pxPerYear = (x1 - x0) / ((span.endMs - span.startMs) / (365.25 * DAY_MS));
+    const roomForMarks = pxPerYear >= 40;
+    const stations = sky && roomForMarks ? between(sky.stations, span.startMs, span.endMs) : [];
+    const conjunctions = sky && roomForMarks ? between(sky.conjunctions, span.startMs, span.endMs) : [];
 
     lanes.forEach((lane, index) => {
       const top = layout.plotTop + index * (laneHeight + LANE_GAP);

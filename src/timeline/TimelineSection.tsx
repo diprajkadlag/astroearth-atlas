@@ -110,26 +110,28 @@ function Legend({ cycles }: { cycles: boolean }) {
   );
 }
 
-function LaneChooser() {
+function LaneChooser({ phone }: { phone: boolean }) {
   const lanes = useAtlas((state) => state.lanes);
   const setLanes = useAtlas((state) => state.setLanes);
+  // DESIGN.md: phones show the first 3 lanes, so a lane added there goes to the top.
+  const shown = phone ? lanes.slice(0, 3) : lanes;
   const toggle = (lane: LaneId) => {
-    const next = lanes.includes(lane)
-      ? lanes.filter((item) => item !== lane)
-      : ALL_LANES.filter((item) => item === lane || lanes.includes(item));
-    setLanes(next);
+    if (shown.includes(lane)) setLanes(lanes.filter((item) => item !== lane));
+    else if (phone) setLanes([lane, ...lanes.filter((item) => item !== lane)]);
+    else setLanes(ALL_LANES.filter((item) => item === lane || lanes.includes(item)));
   };
   return (
-    <details className="relative">
+    <details className="sm:relative">
       <summary className={`${secondary} flex cursor-pointer list-none items-center`}>{t("lanesChoose")}</summary>
-      <fieldset className="absolute z-20 mt-1 min-w-56 rounded-control border border-rule-strong bg-raised p-3">
+      {/* On phones the panel spans the toolbar row, so it never leaves the screen. */}
+      <fieldset className="absolute z-20 mt-1 rounded-control border border-rule-strong bg-raised p-3 max-sm:inset-x-0 sm:min-w-56">
         <legend className="sr-only">{t("lanesChoose")}</legend>
         {ALL_LANES.map((lane) => (
-          <label key={lane} className="flex min-h-9 items-center gap-2 text-small">
+          <label key={lane} className="flex min-h-11 items-center gap-2 text-small sm:min-h-9">
             <input
               type="checkbox"
-              checked={lanes.includes(lane)}
-              disabled={lanes.length === 1 && lanes.includes(lane)}
+              checked={shown.includes(lane)}
+              disabled={shown.length === 1 && shown.includes(lane)}
               onChange={() => toggle(lane)}
               className="size-4 accent-brass"
             />
@@ -137,6 +139,7 @@ function LaneChooser() {
           </label>
         ))}
         <p className="text-muted mt-1 max-w-56 text-caption">{t("lanesMoonNote")}</p>
+        {phone ? <p className="text-muted mt-1 max-w-56 text-caption">{t("lanesPhoneNote")}</p> : null}
       </fieldset>
     </details>
   );
@@ -149,14 +152,14 @@ function PairChooser() {
     setPairs(pairs.includes(pair) ? pairs.filter((item) => item !== pair) : [...pairs, pair]);
   };
   return (
-    <details className="relative">
+    <details className="sm:relative">
       <summary className={`${secondary} flex cursor-pointer list-none items-center`}>{t("pairsChoose")}</summary>
-      <fieldset className="absolute z-20 mt-1 min-w-60 rounded-control border border-rule-strong bg-raised p-3">
+      <fieldset className="absolute z-20 mt-1 rounded-control border border-rule-strong bg-raised p-3 max-sm:inset-x-0 sm:min-w-60">
         <legend className="text-muted mb-1 text-caption">{t("pairsLimit", { count: MAX_CYCLE_PAIRS })}</legend>
         {CYCLE_PAIRS.map((pair) => {
           const checked = pairs.includes(pair);
           return (
-            <label key={pair} className="flex min-h-9 items-center gap-2 text-small">
+            <label key={pair} className="flex min-h-11 items-center gap-2 text-small sm:min-h-9">
               <input
                 type="checkbox"
                 checked={checked}
@@ -196,6 +199,52 @@ export function TimelineSection({ className = "" }: { className?: string }) {
     if (event) jumpTo(event.timeMs, { exact: true, eventId: event.id });
   };
 
+  // Phones: Play and the ruler come right under the scene; these controls go under the chart (DESIGN.md, layout).
+  const moreControls = (
+    <div className={`relative flex flex-wrap items-center gap-2 ${phone ? "mt-3" : "mt-2"}`}>
+      <button
+        type="button"
+        onClick={() => setInstant(clampInstant(startOfUtcDay(Date.now())))}
+        className={secondary}
+      >
+        {t("today")}
+      </button>
+      <button
+        type="button"
+        aria-label={t("zoomOut")}
+        onClick={() => zoom(2, useAtlas.getState().instantMs)}
+        className={`${secondary} min-w-11`}
+      >
+        <span aria-hidden="true" className="text-lead sm:hidden">
+          −
+        </span>
+        <span aria-hidden="true" className="max-sm:hidden">
+          {t("zoomOut")}
+        </span>
+      </button>
+      <button
+        type="button"
+        aria-label={t("zoomIn")}
+        onClick={() => zoom(0.5, useAtlas.getState().instantMs)}
+        className={`${secondary} min-w-11`}
+      >
+        <span aria-hidden="true" className="text-lead sm:hidden">
+          +
+        </span>
+        <span aria-hidden="true" className="max-sm:hidden">
+          {t("zoomIn")}
+        </span>
+      </button>
+      <button type="button" onClick={() => go(previous)} disabled={!previous} className={secondary}>
+        {t("previousEvent")}
+      </button>
+      <button type="button" onClick={() => go(next)} disabled={!next} className={secondary}>
+        {t("nextEvent")}
+      </button>
+      {view === "lanes" ? <LaneChooser phone={phone} /> : <PairChooser />}
+    </div>
+  );
+
   return (
     <section aria-labelledby="timeline-title" className={`min-w-0 ${className}`}>
       <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
@@ -219,13 +268,13 @@ export function TimelineSection({ className = "" }: { className?: string }) {
           <button
             type="button"
             onClick={togglePlaying}
-            className={`${buttonBase} min-w-24 bg-brass text-ground hover:bg-ivory`}
+            className={`${buttonBase} bg-brass text-ground hover:bg-ivory sm:min-w-24`}
             data-testid="play"
           >
             {playing ? t("pause") : t("play")}
           </button>
           <label className="flex items-center gap-2 text-small">
-            {t("speed")}
+            <span className="max-sm:sr-only">{t("speed")}</span>
             <select
               value={speed}
               onChange={(event) => setSpeed(Number(event.target.value) as PlaySpeed)}
@@ -248,28 +297,7 @@ export function TimelineSection({ className = "" }: { className?: string }) {
           </button>
         </div>
       </div>
-      <div className="mt-2 flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          onClick={() => setInstant(clampInstant(startOfUtcDay(Date.now())))}
-          className={secondary}
-        >
-          {t("today")}
-        </button>
-        <button type="button" onClick={() => zoom(2, useAtlas.getState().instantMs)} className={secondary}>
-          {t("zoomOut")}
-        </button>
-        <button type="button" onClick={() => zoom(0.5, useAtlas.getState().instantMs)} className={secondary}>
-          {t("zoomIn")}
-        </button>
-        <button type="button" onClick={() => go(previous)} disabled={!previous} className={secondary}>
-          {t("previousEvent")}
-        </button>
-        <button type="button" onClick={() => go(next)} disabled={!next} className={secondary}>
-          {t("nextEvent")}
-        </button>
-        {view === "lanes" ? <LaneChooser /> : <PairChooser />}
-      </div>
+      {phone ? null : moreControls}
       <div className="mt-3">
         <DateRuler />
       </div>
@@ -277,6 +305,7 @@ export function TimelineSection({ className = "" }: { className?: string }) {
         {view === "lanes" ? <LanesView height={phone ? 210 : 370} /> : <CyclesView height={phone ? 210 : 370} />}
       </div>
       <Legend cycles={view === "cycles"} />
+      {phone ? moreControls : null}
       <p className="text-muted mt-1 text-small">{view === "lanes" ? t("timelineHelp") : t("cyclesHelp")}</p>
     </section>
   );

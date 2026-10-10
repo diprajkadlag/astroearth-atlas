@@ -116,8 +116,9 @@ Greenwich apparent sidereal time.
   and during playback, it shows 00:00 UTC of the date, so the globe stays
   calm. The ring and the grahas always show the true instant.
 - **Graha marks.** The marks sit on the ring at their sidereal longitude. The
-  ecliptic latitude is not shown. The Moon mark is lit by the true Sun
-  direction, so it shows the phase.
+  ecliptic latitude is not shown. The Moon mark shows the phase as seen from
+  the Earth: its lit part follows the elongation from the Sun (new at 0°, full
+  at 180°), and its lit limb faces the Sun's mark on screen.
 
 ## Tithi
 
@@ -147,7 +148,12 @@ unbroken line. The same angle holds in the tropical zodiac.
   the start and the end of that local day, because the Moon moves about 13°
   in a day.
 - **Eclipses and conjunctions** on the timeline come from the precomputed sky
-  events (see above). Their cards give calculated facts only.
+  events (see above). Their cards give calculated facts only. astronomy-engine
+  names each solar eclipse by its type at greatest eclipse, so a hybrid
+  eclipse, such as the one of 2023-04-20, shows as total.
+- **Sources.** Each date, place and Wikidata item was checked on 2026-10-10.
+  Where Wikidata gives no day, the card links the official page that does
+  (WHO, CERN, the South African government).
 
 ## Sky moments
 

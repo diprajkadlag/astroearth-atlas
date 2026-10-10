@@ -77,9 +77,14 @@ export function RulesPanel({ className = "" }: { className?: string }) {
           </li>
         ))}
       </Section>
-      <details className="border-b border-rule py-2">
-        <summary className="flex cursor-pointer items-baseline justify-between text-small font-semibold">
-          {t("rulesAspects")}
+      <details className="group border-b border-rule py-2">
+        <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between text-small font-semibold sm:min-h-0">
+          <span className="flex items-center gap-2">
+            <svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10" className="transition-transform group-open:rotate-90">
+              <path d="M3 1.5 L7 5 L3 8.5" fill="none" stroke="currentColor" strokeWidth="1.5" />
+            </svg>
+            {t("rulesAspects")}
+          </span>
           <span className="text-muted font-normal tabular-nums">{drishti.length}</span>
         </summary>
         <ul className="mt-1 space-y-0.5 text-small">

@@ -67,9 +67,16 @@ export function CyclesView({ height }: { height: number }) {
       ctx.moveTo(x0, y);
       ctx.lineTo(x1, y);
       ctx.stroke();
-      ctx.fillStyle = UI_COLORS.muted;
       ctx.textAlign = inset ? "left" : "right";
-      ctx.fillText(t(key), inset ? x0 + 4 : x0 - 10, inset ? y + (value === -1 ? -9 : 9) : y);
+      const labelX = inset ? x0 + 4 : x0 - 10;
+      const labelY = inset ? y + (value === -1 ? -9 : 9) : y;
+      if (inset) {
+        // On narrow screens the words sit on the plot, so they get a ground backing.
+        ctx.fillStyle = withAlpha(UI_COLORS.ground, 0.85);
+        ctx.fillRect(labelX - 3, labelY - 8, ctx.measureText(t(key)).width + 6, 16);
+      }
+      ctx.fillStyle = UI_COLORS.muted;
+      ctx.fillText(t(key), labelX, labelY);
     }
 
     ctx.save();

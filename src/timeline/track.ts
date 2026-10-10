@@ -52,10 +52,24 @@ export function drawTrack(
     ctx.fillRect(left, y + 4, Math.max(2, right - left), 3);
   }
 
-  for (const event of events) {
+  // Dense spans (685 eclipses in 151 years): eclipses become short ticks, so
+  // the band stays readable, and world events and conjunctions stay full size.
+  const visible = events.filter((event) => {
     const x = xOf(event.timeMs);
-    if (x < x0 - MARK || x > x1 + MARK) continue;
-    drawMark(ctx, event, x, y, ground);
+    return x >= x0 - MARK && x <= x1 + MARK;
+  });
+  const eclipses = visible.filter((event) => event.kind === "solar-eclipse" || event.kind === "lunar-eclipse");
+  const dense = eclipses.length > 0 && (x1 - x0) / eclipses.length < 8;
+  const ordered = [...eclipses, ...visible.filter((event) => event.kind === "world" || event.kind === "great-conjunction")];
+  for (const event of ordered) {
+    const x = xOf(event.timeMs);
+    if (dense && (event.kind === "solar-eclipse" || event.kind === "lunar-eclipse")) {
+      const solar = event.kind === "solar-eclipse";
+      ctx.fillStyle = withAlpha(UI_COLORS.eclipse, solar ? 0.9 : 0.55);
+      ctx.fillRect(Math.round(x) - (solar ? 1 : 0.5), y - (solar ? 5 : 3), solar ? 2 : 1, solar ? 10 : 6);
+    } else {
+      drawMark(ctx, event, x, y, ground);
+    }
     if (event.id === selectedId) {
       // The selected event: a brass ring, like keyboard focus (DESIGN.md, brass).
       ctx.strokeStyle = UI_COLORS.brass;
@@ -109,7 +123,10 @@ function drawMark(ctx: CanvasRenderingContext2D, event: TimelineEvent, x: number
   }
 }
 
-/** The event under the pointer, if one lies within 7 px of it. World events win ties. */
+/**
+ * The event under the pointer, within 7 px of it. A world event inside that
+ * radius wins over a nearer eclipse, because eclipse marks are so dense.
+ */
 export function hitTrack(
   geometry: TrackGeometry,
   events: readonly TimelineEvent[],
@@ -117,15 +134,17 @@ export function hitTrack(
   y: number,
 ): TimelineEvent | null {
   if (y < geometry.top || y > geometry.top + TRACK_HEIGHT) return null;
-  let best: TimelineEvent | null = null;
-  let bestDistance = 7;
-  for (const event of events) {
-    const distance = Math.abs(geometry.xOf(event.timeMs) - x);
-    const better = distance < bestDistance || (distance === bestDistance && event.kind === "world");
-    if (better) {
-      best = event;
-      bestDistance = distance;
+  const nearest = (candidates: readonly TimelineEvent[]) => {
+    let best: TimelineEvent | null = null;
+    let bestDistance = 7;
+    for (const event of candidates) {
+      const distance = Math.abs(geometry.xOf(event.timeMs) - x);
+      if (distance <= bestDistance) {
+        best = event;
+        bestDistance = distance;
+      }
     }
-  }
-  return best;
+    return best;
+  };
+  return nearest(events.filter((event) => event.kind === "world")) ?? nearest(events);
 }

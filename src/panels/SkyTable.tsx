@@ -68,7 +68,7 @@ export function SkyTable({ className = "" }: { className?: string }) {
         })}
       </ul>
       {kalaSarpa.active ? (
-        <p className="mt-3 border border-brass px-3 py-2 text-small">{t("kalaSarpa")}</p>
+        <p className="mt-3 border border-rule-strong px-3 py-2 text-small">{t("kalaSarpa")}</p>
       ) : null}
     </section>
   );
