@@ -146,6 +146,8 @@ unbroken line. The same angle holds in the tropical zodiac.
 - **Wars, attacks and disputes.** Titles and summaries say what happened and
   when, in neutral words, and give no blame where the facts are disputed. A
   war fought over a wide area has no place, so the globe shows no pin for it.
+  An event whose place is disputed has no pin either, for example the
+  declaration of independence of Bangladesh in 1971.
 - **Time rule.** An event with a stated time uses that UTC time. An event
   known to the day uses 12:00 local mean time at its place (4 minutes per
   degree of longitude east of Greenwich), or 12:00 UTC without a place. An
@@ -163,8 +165,8 @@ unbroken line. The same angle holds in the tropical zodiac.
 - **Sources.** Each date, place and Wikidata item was checked on 2026-10-10.
   Where Wikidata gives no day, the card links the official page that does
   (WHO, CERN, the South African government, the Embassy of India in
-  Washington for Pokhran-II, and the IMD journal MAUSAM for the Odisha
-  cyclone of 1999).
+  Washington for Pokhran-II, the IMD journal MAUSAM for the Odisha cyclone
+  of 1999, and the National Assembly of Pakistan for 14 August 1947).
 
 ## Sky moments
 

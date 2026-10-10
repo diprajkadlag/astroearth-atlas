@@ -5,11 +5,13 @@
  * - Selection: major events with a clear start date, global plus key Indian
  *   events. No event is added or removed because of the sky at its date.
  *   An event known only to the year is not listed. A war fought over a wide
- *   area has no place, so the globe shows no pin for it.
+ *   area, or an event whose place is disputed, has no place, so the globe
+ *   shows no pin for it.
  * - Each date, place and Wikidata item was checked on 2026-10-10. Where
  *   Wikidata has no day for the event, `source` names the official page
  *   that gives it (WHO, CERN, the South African government, the Embassy of
- *   India in Washington, the IMD journal MAUSAM).
+ *   India in Washington, the IMD journal MAUSAM, the National Assembly of
+ *   Pakistan).
  * tests/worldEvents.test.ts checks the schema of every entry.
  */
 
@@ -218,6 +220,16 @@ export const WORLD_EVENTS: readonly WorldEvent[] = [
     wikidata: "Q7272639",
   },
   {
+    id: "auschwitz-liberated-1945",
+    title: "Auschwitz is liberated",
+    start: "1945-01-27",
+    precision: "day",
+    category: "conflict",
+    place: { name: "Oświęcim, Poland", latitudeDeg: 50.03, longitudeDeg: 19.20 },
+    summary: "Soviet troops reached the German Nazi camps of Auschwitz in occupied Poland, where more than a million people had been murdered, most of them Jews.",
+    wikidata: "Q83780345",
+  },
+  {
     id: "ww2-europe-ends-1945",
     title: "Germany signs its unconditional surrender",
     start: "1945-05-07",
@@ -265,6 +277,17 @@ export const WORLD_EVENTS: readonly WorldEvent[] = [
     category: "politics",
     summary: "The Charter of the United Nations entered into force after enough member states had ratified it.",
     wikidata: "Q1065",
+  },
+  {
+    id: "pakistan-independence-1947",
+    title: "Pakistan becomes independent",
+    start: "1947-08-14",
+    precision: "day",
+    category: "politics",
+    place: { name: "Karachi", latitudeDeg: 24.86, longitudeDeg: 67.01 },
+    summary: "The transfer of power to Pakistan was marked at its Constituent Assembly in Karachi. Pakistan celebrates this day as its Independence Day.",
+    wikidata: "Q843",
+    source: "https://na.gov.pk/en/content.php?id=75",
   },
   {
     id: "india-independence-1947",
@@ -471,6 +494,15 @@ export const WORLD_EVENTS: readonly WorldEvent[] = [
     wikidata: "Q245551",
   },
   {
+    id: "bangladesh-independence-1971",
+    title: "Bangladesh declares independence",
+    start: "1971-03-26",
+    precision: "day",
+    category: "politics",
+    summary: "After the Pakistan army launched Operation Searchlight in Dhaka on the night of 25 March, the independence of Bangladesh was declared.",
+    wikidata: "Q4855429",
+  },
+  {
     id: "indo-pak-war-1971",
     title: "India–Pakistan war of 1971 begins",
     start: "1971-12-03",
@@ -631,6 +663,16 @@ export const WORLD_EVENTS: readonly WorldEvent[] = [
     wikidata: "Q4349327",
   },
   {
+    id: "rwanda-genocide-1994",
+    title: "Genocide against the Tutsi in Rwanda begins",
+    start: "1994-04-07",
+    precision: "day",
+    category: "conflict",
+    place: { name: "Kigali", latitudeDeg: -1.95, longitudeDeg: 30.12 },
+    summary: "After President Habyarimana's plane was shot down the evening before, the killing of Tutsi and of Hutu who opposed it began in Kigali and spread across Rwanda.",
+    wikidata: "Q131297",
+  },
+  {
     id: "mandela-president-1994",
     title: "Nelson Mandela is inaugurated as president of South Africa",
     start: "1994-05-10",
@@ -661,6 +703,16 @@ export const WORLD_EVENTS: readonly WorldEvent[] = [
     summary: "India carried out three underground nuclear tests at the Pokhran range in Rajasthan, and two more on 13 May.",
     wikidata: "Q3270072",
     source: "https://indianembassyusa.gov.in/ArchivesDetails?id=225",
+  },
+  {
+    id: "chagai-tests-1998",
+    title: "Pakistan conducts nuclear tests at Chagai",
+    start: "1998-05-28",
+    precision: "day",
+    category: "science",
+    place: { name: "Ras Koh hills, Balochistan", latitudeDeg: 28.79, longitudeDeg: 64.95 },
+    summary: "Pakistan carried out underground nuclear tests in the Ras Koh hills of Balochistan, about two weeks after India's tests. One more test followed on 30 May.",
+    wikidata: "Q2658429",
   },
   {
     id: "kargil-1999",
