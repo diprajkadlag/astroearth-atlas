@@ -5,11 +5,14 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
-const TEXT = new Set([".ts", ".tsx", ".css", ".html", ".json", ".svg", ".txt", ".md"]);
+const TEXT = new Set([".ts", ".tsx", ".css", ".html", ".json", ".svg", ".txt", ".md", ".mjs", ".js", ".cjs", ".yml", ".yaml"]);
+/** Folders that are not part of the repository's own text: dependencies, builds and test output. */
+const SKIP = new Set(["node_modules", "dist", "e2e-artifacts", "test-results", "playwright-report", ".git"]);
 
 function textFiles(folder: string): string[] {
   if (!existsSync(folder)) return [];
   return readdirSync(folder).flatMap((name) => {
+    if (SKIP.has(name)) return [];
     const path = join(folder, name);
     if (statSync(path).isDirectory()) return textFiles(path);
     return TEXT.has(extname(name)) ? [path] : [];
@@ -17,19 +20,11 @@ function textFiles(folder: string): string[] {
 }
 
 describe("product rules (CLAUDE.md)", () => {
-  it("rule 6: names the inspiring speaker only in the README credit line, never in the app", () => {
+  it("rule 6: names the inspiring speaker only in the README credit line, nowhere else in the repository", () => {
     // Built from parts, so this test file does not contain the name itself.
     const name = ["Abh" + "igya", "An" + "and"];
-    // The document pages render docs/METHOD.md and the table of CREDITS.md too.
-    const files = [
-      ...textFiles(join(ROOT, "src")),
-      ...textFiles(join(ROOT, "public")),
-      ...textFiles(join(ROOT, "pages")),
-      join(ROOT, "index.html"),
-      join(ROOT, "package.json"),
-      join(ROOT, "docs", "METHOD.md"),
-      join(ROOT, "CREDITS.md"),
-    ];
+    // Every text file of the repository, including .github and the docs, except the README.
+    const files = textFiles(ROOT).filter((file) => relative(ROOT, file) !== "README.md");
     const hits = files.filter((file) => {
       const text = readFileSync(file, "utf8");
       return text.includes(name[0] as string) || text.includes(name.join(" "));

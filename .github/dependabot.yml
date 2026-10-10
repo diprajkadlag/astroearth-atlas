@@ -1,0 +1,13 @@
+# Weekly update checks for the npm packages and the GitHub Actions.
+# Security alerts and updates also need the switches in Settings > Code security.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
