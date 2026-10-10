@@ -19,7 +19,7 @@ function textFiles(folder: string): string[] {
 describe("product rules (CLAUDE.md)", () => {
   it("rule 6: names the inspiring speaker only in the README credit line, never in the app", () => {
     // Built from parts, so this test file does not contain the name itself.
-    const name = ["Abhigya", "Anand"];
+    const name = ["Abh" + "igya", "An" + "and"];
     // The document pages render docs/METHOD.md and the table of CREDITS.md too.
     const files = [
       ...textFiles(join(ROOT, "src")),

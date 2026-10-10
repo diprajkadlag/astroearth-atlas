@@ -91,6 +91,8 @@ export interface AtlasDebug {
   cameraUp: [number, number, number];
   /** Width of the Earth maps on screen: 0 before any load, then 512, then 2048 or 4096. */
   mapsWidth: number;
+  /** True while the first-load animation runs (DESIGN.md: skipped with reduced motion). */
+  introActive: boolean;
   /** Sub-solar point under the Sun marker, from the Earth mesh's own matrix. */
   subSolarFromScene(): { latitudeDeg: number; longitudeDeg: number };
   /** Sidereal longitude of a graha marker, read from its scene position. */
@@ -870,6 +872,7 @@ export function SkyScene({ overlayRef, apiRef, interactive }: SkySceneProps) {
       earthInstantMs: Number.NaN,
       cameraUp: [camera.up.x, camera.up.y, camera.up.z],
       mapsWidth: objects.earthMaterial.uniforms.hasMaps.value ? 512 : 0,
+      introActive: introRef.current !== null,
       subSolarFromScene() {
         const sun = objects.markers.get("sun");
         if (!sun) throw new Error("The scene has no Sun marker.");
@@ -1032,6 +1035,7 @@ export function SkyScene({ overlayRef, apiRef, interactive }: SkySceneProps) {
       debug.frames += 1;
       debug.instantMs = atlas.instantMs;
       debug.earthInstantMs = earthMs;
+      debug.introActive = introRef.current !== null;
     }
   });
 

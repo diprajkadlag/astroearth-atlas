@@ -8,6 +8,25 @@ globe.
 > **Status:** in development. The repository is private until the first
 > release is ready.
 
+![AstroEarth Atlas on 21 December 2020: the nakshatra ring around the Earth, the sky table, and the planetary time waves from 2015 to 2026](docs/images/astroearth-atlas-desktop.webp)
+
+*21 December 2020, the day of the great conjunction in Capricorn. The west of
+the Koorma Chakra glows for the solar eclipse of 14 December in Jyeshtha.
+Earth images: NASA.*
+
+## What you can do
+
+- Move the date with the ruler. The nakshatra ring, the Earth and the
+  planetary time waves follow it.
+- Read the sky table: the sign, degree, nakshatra and pada of the 9 grahas, in
+  the Lahiri sidereal zodiac.
+- Open world events, eclipses and the conjunctions of Jupiter and Saturn on
+  the timeline. Each card gives the facts of the event.
+- See the Koorma Chakra of the Brihat Samhita on the globe: in its classical
+  form around Mathura, or as a modern extension over half of the Earth.
+- Compare the great conjunctions from 1000 to 2100 in the sidereal and the
+  tropical zodiac.
+
 ## What it is, and what it is not
 
 AstroEarth Atlas shows calculated sky positions and traditional Jyotish rules. It
@@ -35,6 +54,7 @@ npm run build
 npm run licenses   # production licenses and THIRD_PARTY_NOTICES.md
 npm run data:check # precomputed sky data matches the engine
 npm run e2e        # browser checks against the built site (port 4748)
+npm run release-check # after a build: no [TODO] marker left in the legal pages
 ```
 
 The first `npm run e2e` needs a browser: `npx playwright install chromium`.

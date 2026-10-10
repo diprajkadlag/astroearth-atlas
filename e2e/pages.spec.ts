@@ -31,6 +31,11 @@ test.describe("document pages", () => {
       await expect(browser.locator("footer").getByText("It does not predict events")).toBeVisible();
       await browser.waitForLoadState("networkidle");
       expect(foreign, `requests to other origins:\n${foreign.join("\n")}`).toEqual([]);
+      const results = await new AxeBuilder({ page: browser }).analyze();
+      const blocking = results.violations
+        .filter((violation) => violation.impact === "serious" || violation.impact === "critical")
+        .map((violation) => `${violation.id}: ${violation.help}`);
+      expect(blocking).toEqual([]);
     });
   }
 

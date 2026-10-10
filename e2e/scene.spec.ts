@@ -17,6 +17,7 @@ interface DebugHook {
   cameraUp: [number, number, number];
   subSolarFromScene(): { latitudeDeg: number; longitudeDeg: number };
   markerLongitude(id: string): number;
+  introActive: boolean;
 }
 
 type DebugWindow = Window & { __ASTROEARTH_DEBUG__?: DebugHook };
@@ -154,4 +155,18 @@ test("shows the fallback text when WebGL is not available", async ({ page }) => 
   await expect(page.getByText("The 3D view is not available")).toBeVisible();
   // The sky table still lists all 9 grahas.
   await expect(page.locator("[data-graha]")).toHaveCount(9);
+});
+
+test("reduced motion skips the first-load animation (DESIGN.md, motion)", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/#d=2020-12-21");
+  await sceneReady(page);
+  expect(await page.evaluate(() => (window as DebugWindow).__ASTROEARTH_DEBUG__!.introActive)).toBe(false);
+});
+
+test("without reduced motion, the first-load animation runs and then ends", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/#d=2020-12-21");
+  await sceneReady(page);
+  await expect.poll(() => page.evaluate(() => (window as DebugWindow).__ASTROEARTH_DEBUG__!.introActive), { timeout: 10_000 }).toBe(false);
 });

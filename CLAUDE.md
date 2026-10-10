@@ -1,7 +1,7 @@
 # AstroEarth Atlas: project rules
 
 The approved plan is in
-`C:\Users\dipra\.claude\plans\so-we-will-develop-graceful-sedgewick.md`
+`~/.claude/plans/so-we-will-develop-graceful-sedgewick.md` (outside the repository)
 (approved 2026-10-09). Follow its milestones (M0 to M6, then version 1.1).
 
 ## Product rules
@@ -10,7 +10,7 @@ The approved plan is in
 3. Add a row to `CREDITS.md` for every file in `public/textures`, `public/fonts` and `public/data`, in the same commit.
 4. Ship only permissive licenses (MIT, ISC, Apache-2.0, BSD). Run `npm run licenses`. Do not add Swiss Ephemeris or GSAP.
 5. Do not draw political borders on the globe.
-6. Name Abhigya Anand only in the README credit line. Never in the app, page metadata, keywords or GitHub topics. Make no claim about any person's forecasts.
+6. Name the speaker of the README credit line only in that line. Never in the app, page metadata, keywords, GitHub topics or other repository files. Make no claim about any person's forecasts.
 7. Write event summaries in own words. Store facts and Wikidata IDs. Do not copy Wikipedia text.
 8. Market history (version 1.1): dated facts only. No prices, tickers, future market dates or direction words.
 9. Brihat Samhita: use the Iyer translation (1884, public domain) or own words. Cite chapter and stanza.
