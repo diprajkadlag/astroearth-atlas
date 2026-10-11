@@ -1,6 +1,6 @@
 {
   "name": "astroearth-atlas",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "description": "AstroEarth Atlas: an interactive 3D Earth and planetary time waves for Vedic mundane astrology (Lahiri sidereal zodiac), 1900 to 2050.",
   "keywords": [
