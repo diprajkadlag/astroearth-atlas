@@ -25,7 +25,7 @@ Follow its milestones (M0 to M6, then version 1.1).
 - Engine searches take a `sampler` option. Long scans pass `cachingSampler()` so that 00:00 UTC positions are computed once.
 - Scene tests read positions from a debug hook on `window`, never from pixels. Screenshots are for review only.
 - The scene frame is Z-up, right-handed, sidereal ecliptic of date. Longitude increases counter-clockwise seen from ecliptic north.
-- Document pages (About, Method, Privacy, Impressum, Credits) are `pages/*.html`, rendered at build time by `scripts/doc-pages.ts` from `src/content/en/*.md`, `docs/METHOD.md` and the table of `CREDITS.md`. The Pages workflow runs `npm run release-check`, which refuses to publish while a `[TODO` marker remains.
+- Document pages (About, Method, Privacy, Credits) are `pages/*.html`, rendered at build time by `scripts/doc-pages.ts` from `src/content/en/*.md`, `docs/METHOD.md` and the table of `CREDITS.md`. The Pages workflow runs `npm run release-check`, which refuses to publish while a `[TODO` marker remains. There is no Impressum page: on 2026-10-11 the owner chose to publish without one, like the owner's other sites, after a note on § 18 (1) MStV. Do not add one without asking the owner.
 - Design rules live in `DESIGN.md` (Yantra direction, chosen 2026-10-09). Read it before any interface change. Colours come from `src/design/tokens.css` and `src/design/palette.ts` only.
 
 ## Writing rules

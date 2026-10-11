@@ -13,7 +13,6 @@ const PAGES = [
   { file: "about", title: "About", heading: "About AstroEarth Atlas" },
   { file: "method", title: "Method", heading: "Method" },
   { file: "privacy", title: "Privacy", heading: "Privacy" },
-  { file: "impressum", title: "Impressum", heading: "Impressum" },
   { file: "credits", title: "Credits", heading: "Credits" },
 ] as const;
 

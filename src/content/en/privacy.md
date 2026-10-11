@@ -1,12 +1,13 @@
 # Privacy
 
-Version of [TODO: date].
+Version of 11 October 2026.
 
 ## Who is responsible
 
-[TODO: name]\
-[TODO: postal address]\
-[TODO: email address]
+AstroEarth Atlas is a private, non-commercial hobby project of the owner of the
+GitHub account [diprajkadlag](https://github.com/diprajkadlag). You can reach
+the owner through GitHub, for example with an issue in the
+[repository](https://github.com/diprajkadlag/astroearth-atlas/issues).
 
 ## What this site does not do
 
@@ -35,12 +36,11 @@ this site safely. GitHub may process the data in the USA. GitHub states that it
 has certified its adherence to the EU-U.S. Data Privacy Framework Principles
 ([GitHub General Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement)).
 
-## Contact by email
+## Contact through GitHub
 
-If you write an email to the address above, your address and your message are
-used only to answer you. The legal basis is Art. 6 (1) (f) GDPR, or
-Art. 6 (1) (b) GDPR where your message concerns a request of yours. The email
-is deleted when the matter is closed, unless a law requires a longer period.
+If you write to the owner through GitHub, GitHub stores your message under its
+own privacy statement. Issues and their comments are public. The owner uses
+your message only to answer you. The legal basis is Art. 6 (1) (f) GDPR.
 
 ## Links to other sites
 
@@ -59,4 +59,5 @@ supervisory authority (Art. 77).
 
 Where data is processed on the basis of Art. 6 (1) (f) GDPR, you have the right
 to object to this processing at any time, on grounds relating to your
-particular situation (Art. 21 GDPR). Send your objection to the address above.
+particular situation (Art. 21 GDPR). Send your objection to the owner through
+GitHub, as described above.

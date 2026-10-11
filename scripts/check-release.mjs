@@ -1,5 +1,5 @@
 // Refuses to publish while a document page still holds a [TODO: ...] marker.
-// The Impressum and the privacy page need the owner's own details first.
+// The privacy page must name the owner's contact before the site goes live.
 // Runs after `npm run build` in the Pages workflow: `npm run release-check`.
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 

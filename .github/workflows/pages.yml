@@ -55,8 +55,8 @@ jobs:
         run: npm run build
 
       - name: Refuse to publish unfinished legal pages
-        # The Impressum and the privacy page hold [TODO] markers until the
-        # owner fills in their details (scripts/check-release.mjs).
+        # A document page must not hold a [TODO] marker
+        # (scripts/check-release.mjs).
         run: npm run release-check
 
       - uses: actions/configure-pages@v6

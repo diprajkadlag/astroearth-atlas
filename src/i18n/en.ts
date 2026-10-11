@@ -16,7 +16,6 @@ export const en = {
   pageAbout: "About",
   pageMethod: "Method",
   pagePrivacy: "Privacy",
-  pageImpressum: "Impressum",
   pageCredits: "Credits",
   pageBack: "Back to the atlas",
   pageTable: "Table, scrolls sideways on narrow screens",

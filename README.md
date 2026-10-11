@@ -5,9 +5,8 @@ An interactive 3D Earth and planetary time waves for Vedic mundane astrology
 dated world events, and maps the Koorma Chakra of the Brihat Samhita onto the
 globe.
 
-> **Status:** version 1.0. The source code is public. There is no public
-> website yet: run the app on your own computer (see
-> [Development](#development)).
+> **Status:** version 1.0. Live at
+> [diprajkadlag.github.io/astroearth-atlas](https://diprajkadlag.github.io/astroearth-atlas/).
 
 ![AstroEarth Atlas on 21 December 2020: the nakshatra ring around the Earth, the sky table, and the planetary time waves from 2015 to 2026](docs/images/astroearth-atlas-desktop.webp)
 

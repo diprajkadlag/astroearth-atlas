@@ -7,14 +7,14 @@ import type { Plugin } from "vite";
 import { en } from "../src/i18n/en.ts";
 
 /**
- * The document pages of the site (plan, M6): About, Method, Privacy, Impressum
- * and Credits. Each page is a small HTML entry in pages/ with a placeholder
+ * The document pages of the site (plan, M6): About, Method, Privacy and
+ * Credits. Each page is a small HTML entry in pages/ with a placeholder
  * <!--page:name-->. At build time (and in the dev server) this plugin renders
  * the Markdown source into it, with the same header, navigation and footer on
  * every page. No JavaScript ships with these pages, and marked runs only here.
  */
 
-export type DocPageName = "about" | "method" | "privacy" | "impressum" | "credits";
+export type DocPageName = "about" | "method" | "privacy" | "credits";
 
 export interface DocPage {
   name: DocPageName;
@@ -27,7 +27,6 @@ export const DOC_PAGES: readonly DocPage[] = [
   { name: "about", title: en.pageAbout, source: "src/content/en/about.md" },
   { name: "method", title: en.pageMethod, source: "docs/METHOD.md" },
   { name: "privacy", title: en.pagePrivacy, source: "src/content/en/privacy.md" },
-  { name: "impressum", title: en.pageImpressum, source: "src/content/en/impressum.md" },
   { name: "credits", title: en.pageCredits, source: "src/content/en/credits.md" },
 ];
 

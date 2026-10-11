@@ -18,7 +18,6 @@ const PAGES = [
   ["about", "pageAbout"],
   ["method", "pageMethod"],
   ["privacy", "pagePrivacy"],
-  ["impressum", "pageImpressum"],
   ["credits", "pageCredits"],
 ] as const;
 

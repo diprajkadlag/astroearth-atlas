@@ -1,7 +1,7 @@
 @import "../index.css";
 
 /*
- * The document pages: About, Method, Privacy, Impressum and Credits
+ * The document pages: About, Method, Privacy and Credits
  * (scripts/doc-pages.ts renders them from Markdown at build time). Same
  * tokens as the app (DESIGN.md): plain panels, hairlines, no cards.
  */
