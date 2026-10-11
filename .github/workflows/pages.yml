@@ -54,7 +54,7 @@ jobs:
           BASE_PATH: /${{ github.event.repository.name }}/
         run: npm run build
 
-      - name: Refuse to publish unfinished legal pages
+      - name: Refuse to publish unfinished document pages
         # A document page must not hold a [TODO] marker
         # (scripts/check-release.mjs).
         run: npm run release-check

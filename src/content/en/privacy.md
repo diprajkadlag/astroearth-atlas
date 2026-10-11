@@ -39,8 +39,12 @@ has certified its adherence to the EU-U.S. Data Privacy Framework Principles
 ## Contact through GitHub
 
 If you write to the owner through GitHub, GitHub stores your message under its
-own privacy statement. Issues and their comments are public. The owner uses
-your message only to answer you. The legal basis is Art. 6 (1) (f) GDPR.
+own privacy statement. Issues and their comments are public, so put in them
+only what your request needs. The owner uses your message only to answer you.
+The legal basis is Art. 6 (1) (f) GDPR.
+
+An issue and its comments stay in the repository until the owner deletes
+them. On request, the owner deletes your issue or comment.
 
 ## Links to other sites
 

@@ -54,7 +54,7 @@ npm run build
 npm run licenses   # production licenses and THIRD_PARTY_NOTICES.md
 npm run data:check # precomputed sky data matches the engine
 npm run e2e        # browser checks against the built site (port 4748)
-npm run release-check # after a build: no [TODO] marker left in the legal pages
+npm run release-check # after a build: no [TODO] marker left in the document pages
 ```
 
 The first `npm run e2e` needs a browser: `npx playwright install chromium`.
